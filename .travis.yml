@@ -3,8 +3,10 @@ go:
     - "1.9"
     - "1.10"
 
-script:
-    - go test -timeout 30s -coverprofile=coverage.txt github.com/prebid/go-gdpr/vendorconsent
+before_install:
+  - go get github.com/mattn/goveralls
 
-after_success:
-  - bash <(curl -s https://codecov.io/bash)
+script:
+    - go test -timeout 30s -coverprofile=profile.cov github.com/prebid/go-gdpr/vendorconsent
+    - $GOPATH/bin/goveralls -coverprofile=profile.cov -service=travis-ci
+
