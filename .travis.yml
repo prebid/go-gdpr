@@ -7,6 +7,4 @@ before_install:
   - go get github.com/mattn/goveralls
 
 script:
-    - go test -timeout 30s -coverprofile=profile.cov github.com/prebid/go-gdpr/vendorconsent
-    - $GOPATH/bin/goveralls -coverprofile=profile.cov -service=travis-ci
-
+    - go test -timeout 30s github.com/prebid/go-gdpr/vendorconsent
