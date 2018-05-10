@@ -4,4 +4,7 @@ go:
     - "1.10"
 
 script:
-    - go test -timeout 30s github.com/prebid/go-gdpr/vendorconsent
+    - go test -timeout 30s -coverprofile=coverage.txt github.com/prebid/go-gdpr/vendorconsent
+
+after_success:
+  - bash <(curl -s https://codecov.io/bash)
