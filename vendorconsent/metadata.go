@@ -47,3 +47,9 @@ func (c consentMetadata) MaxVendorID() uint16 {
 	rightByte := byte((c[20]&0x0f)<<4 + (c[21]&0xf0)>>4)
 	return binary.BigEndian.Uint16([]byte{leftByte, rightByte})
 }
+
+func (c consentMetadata) PurposeAllowed(id uint8) bool {
+	// Purposes are stored in bits 132 - 155. The interface contract only defines behavior for ints in the range [1, 24]...
+	// so in the valid range, this won't even overflow a uint8.
+	return isSet(c, uint(id+131))
+}
