@@ -3,8 +3,5 @@ go:
     - "1.9"
     - "1.10"
 
-before_install:
-  - go get github.com/mattn/goveralls
-
 script:
     - go test -timeout 30s github.com/prebid/go-gdpr/vendorconsent
