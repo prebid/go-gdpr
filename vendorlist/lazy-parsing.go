@@ -7,13 +7,13 @@ import (
 )
 
 // ParseLazily returns a view of the data which re-calculates things on each function call.
-// This is cheap, but operations on it will be relatively expensive.
 //
-// This is ideal if you just need to look up information about a single vendor.
-// If you need to make many calls to query lots of information about a vendor,
-// this is not an efficient way to do it.
+// This is ideal if:
+//   1. You only need to look up a few vendors or purpose IDs
+//   2. You don't need good errors on malformed input
 //
-// PRs for an eager parser are welcome.
+// Otherwise, you'd probably do better with a "ParseEagerly([]byte) (VendorList, error)"" function.
+// PRs for this are welcome if it suits you!
 func ParseLazily(data []byte) VendorList {
 	return lazyVendorList(data)
 }
