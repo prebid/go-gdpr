@@ -1,6 +1,6 @@
 package vendorconsent
 
-// A  GDPR Vendor Consent string, as defined by IAB Europe. For technical details,
+// VendorConsents is a GDPR Vendor Consent string, as defined by IAB Europe. For technical details,
 // see https://github.com/InteractiveAdvertisingBureau/GDPR-Transparency-and-Consent-Framework/blob/master/Consent%20string%20and%20vendor%20list%20formats%20v1.1%20Final.md#vendor-consent-string-format-
 type VendorConsents interface {
 	// The version of the Consent string.
