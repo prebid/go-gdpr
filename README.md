@@ -1,4 +1,4 @@
-<a href="https://goreportcard.com/report/github.com/golang/dep"><img src="https://goreportcard.com/badge/github.com/golang/dep" /></a>
+  <a href="https://goreportcard.com/report/github.com/prebid/go-gdpr"><img src="https://goreportcard.com/badge/github.com/prebid/go-gdpr" /></a>
 
 # Go Support for GDPR
 
