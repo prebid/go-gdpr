@@ -11,8 +11,8 @@ const testData = `
     {
       "id": 32,
       "purposeIds": [
-				1,
-				2
+        1,
+        2
       ],
       "legIntPurposeIds": [
         3
@@ -22,7 +22,7 @@ const testData = `
         3
       ]
     }
-	]
+  ]
 }
 `
 
