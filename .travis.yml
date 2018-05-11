@@ -5,3 +5,4 @@ go:
 
 script:
     - go test -timeout 30s github.com/prebid/go-gdpr/vendorconsent
+    - go tool vet -source vendorconsent
