@@ -7,13 +7,13 @@ import (
 )
 
 // ParseLazily returns a view of the data which re-calculates things on each function call.
+// The returned object can be shared safely between goroutines.
 //
 // This is ideal if:
 //   1. You only need to look up a few vendors or purpose IDs
 //   2. You don't need good errors on malformed input
 //
-// Otherwise, you'd probably do better with a "ParseEagerly([]byte) (VendorList, error)"" function.
-// PRs for this are welcome if it suits you!
+// Otherwise, you may get better performance with ParseEagerly.
 func ParseLazily(data []byte) VendorList {
 	return lazyVendorList(data)
 }
