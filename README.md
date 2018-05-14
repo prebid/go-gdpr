@@ -39,8 +39,8 @@ func DemoConsentStringParsing() {
 package main
 
 import (
-	"io/ioutil"
-	"log"
+  "io/ioutil"
+  "log"
   "net/http"
 
   "github.com/prebid/go-gdpr/vendorlist"
@@ -48,18 +48,18 @@ import (
 
 func DemoVendorListParsing() {
   resp, _ := http.Get("https://vendorlist.consensu.org/vendorlist.json")
-	data, _ := ioutil.ReadAll(resp.Body)
+  data, _ := ioutil.ReadAll(resp.Body)
 
-	vendors := ParseLazily(data)
-	log.Printf("The Vendor List Version is %d.", vendors.Version())
+  vendors := ParseLazily(data)
+  log.Printf("The Vendor List Version is %d.", vendors.Version())
 
-	vendor := vendors.Vendor(3)
-	if vendor == nil {
-		log.Print("Vendor 3 did not exist in the list.")
-	} else {
-		log.Printf("Vendor 3 claimed a legitimate interest for Purpose 3? %t", vendor.LegitimateInterest(3))
-		log.Printf("Vendor 3 was used for Purpose 1? %t", vendor.Purpose(1))
-	}
+  vendor := vendors.Vendor(3)
+  if vendor == nil {
+    log.Print("Vendor 3 did not exist in the list.")
+  } else {
+    log.Printf("Vendor 3 claimed a legitimate interest for Purpose 3? %t", vendor.LegitimateInterest(3))
+    log.Printf("Vendor 3 was used for Purpose 1? %t", vendor.Purpose(1))
+  }
 }
 ```
 
