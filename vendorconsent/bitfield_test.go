@@ -15,7 +15,6 @@ func TestBitField(t *testing.T) {
 	// cmpVersion = 2
 	// consentScreen = 7
 	// consentLanguage = "en" (binary 000100001101)
-	// purposeIdBitString = 111011101001101010110011
 	consent, err := Parse(decode(t, "BONV8oqONXwgmADACHENAO7pqzAAppY"))
 	if err != nil {
 		t.Fatalf("Failed to parse valid consent string: %v", err)
@@ -24,18 +23,15 @@ func TestBitField(t *testing.T) {
 	assertUInt16sEqual(t, 14, consent.VendorListVersion())
 	assertUInt16sEqual(t, 10, consent.MaxVendorID())
 
-	var s struct{}
-	hasConsent := map[uint16]struct{}{
-		1:  s,
-		2:  s,
-		4:  s,
-		7:  s,
-		9:  s,
-		10: s,
+	purposesAllowed := buildMap(1, 2, 3, 5, 6, 7, 9, 12, 13, 15, 17, 19, 20, 23, 24)
+	for i := uint8(1); i <= 24; i++ {
+		_, ok := purposesAllowed[uint(i)]
+		assertBoolsEqual(t, ok, consent.PurposeAllowed(i))
 	}
 
+	vendorsWithConsent := buildMap(1, 2, 4, 7, 9, 10)
 	for i := uint16(1); i <= consent.MaxVendorID(); i++ {
-		_, ok := hasConsent[i]
-		assertBoolsEqual(t, ok, consent.HasConsent(i))
+		_, ok := vendorsWithConsent[uint(i)]
+		assertBoolsEqual(t, ok, consent.VendorConsent(i))
 	}
 }

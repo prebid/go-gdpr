@@ -38,7 +38,7 @@ type consentBitField struct {
 	others     []byte
 }
 
-func (f *consentBitField) HasConsent(id uint16) bool {
+func (f *consentBitField) VendorConsent(id uint16) bool {
 	if id < 1 || id > f.MaxVendorID() {
 		return false
 	}

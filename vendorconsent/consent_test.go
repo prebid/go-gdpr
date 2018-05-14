@@ -117,3 +117,12 @@ func assertBoolsEqual(t *testing.T, expected bool, actual bool) {
 		t.Errorf("Bools were not equal. Expected %t, actual %t", expected, actual)
 	}
 }
+
+func buildMap(keys ...uint) map[uint]struct{} {
+	var s struct{}
+	m := make(map[uint]struct{}, len(keys))
+	for _, key := range keys {
+		m[key] = s
+	}
+	return m
+}
