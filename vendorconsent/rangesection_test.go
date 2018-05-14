@@ -17,7 +17,6 @@ func TestRangeSectionConsent(t *testing.T) {
 	// cmpVersion = 2
 	// consentScreen = 7
 	// consentLanguage = "en" (binary 000100001101)
-	// purposeIdBitString = 001011010010110101101011
 	consent, err := Parse(decode(t, "BONciguONcjGKADACHENAOLS1rAHDAFAAEAASABQAMwAeACEAFw"))
 	if err != nil {
 		t.Fatalf("Failed to parse valid consent string: %v", err)
@@ -26,36 +25,16 @@ func TestRangeSectionConsent(t *testing.T) {
 	assertUInt16sEqual(t, 14, consent.VendorListVersion())
 	assertUInt16sEqual(t, 112, consent.MaxVendorID())
 
-	var s struct{}
-	lackingConsent := map[uint16]struct{}{
-		2:  s,
-		4:  s,
-		10: s,
-		11: s,
-		12: s,
-		13: s,
-		14: s,
-		15: s,
-		16: s,
-		17: s,
-		18: s,
-		19: s,
-		20: s,
-		21: s,
-		22: s,
-		23: s,
-		24: s,
-		25: s,
-		30: s,
-		31: s,
-		32: s,
-		33: s,
-		46: s,
+	purposesWithConsent := buildMap(3, 5, 6, 8, 11, 13, 14, 16, 18, 19, 21, 23, 24)
+	for i := uint8(1); i <= 24; i++ {
+		_, ok := purposesWithConsent[uint(i)]
+		assertBoolsEqual(t, ok, consent.PurposeAllowed(i))
 	}
 
+	vendorsLackingConsent := buildMap(2, 4, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 30, 31, 32, 33, 46)
 	for i := uint16(1); i <= consent.MaxVendorID(); i++ {
-		_, ok := lackingConsent[i]
-		assertBoolsEqual(t, !ok, consent.HasConsent(i))
+		_, ok := vendorsLackingConsent[uint(i)]
+		assertBoolsEqual(t, !ok, consent.VendorConsent(i))
 	}
 }
 

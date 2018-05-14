@@ -19,6 +19,12 @@ type VendorConsents interface {
 	// This is the upper bound (inclusive) on valid inputs for HasConsent(id).
 	MaxVendorID() uint16
 
+	// Determine if the user has consented to use data for the given Purpose.
+	//
+	// Note that the Consent string only has room for at most 24 purposes... so the return value on inputs
+	// which are greater than 24 is undefined.
+	PurposeAllowed(id uint8) bool
+
 	// Determine if a given vendor has consent to collect or receive user info.
 	//
 	// This function's behavior is undefined for "invalid" IDs.
@@ -27,7 +33,7 @@ type VendorConsents interface {
 	//
 	// It is the caller's responsibility to get the right Vendor List version for the semantics of the ID.
 	// For more information, see VendorListVersion().
-	HasConsent(id uint16) bool
+	VendorConsent(id uint16) bool
 }
 
 // Parse the vendor consent data from the string. This string should *not* be encoded (by base64 or any other encoding).

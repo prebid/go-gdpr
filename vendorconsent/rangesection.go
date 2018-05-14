@@ -118,7 +118,7 @@ type rangeSection struct {
 }
 
 // VendorConsents implementation
-func (p rangeSection) HasConsent(id uint16) bool {
+func (p rangeSection) VendorConsent(id uint16) bool {
 	if id < 1 || id > p.MaxVendorID() {
 		return false
 	}
