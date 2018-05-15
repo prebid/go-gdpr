@@ -23,8 +23,8 @@ type VendorConsents interface {
 
 	// Determine if the user has consented to use data for the given Purpose.
 	//
-	// Note that the Consent string only has room for at most 24 purposes... so the return value on inputs
-	// which are greater than 24 is undefined.
+	// If the purpose is converted from an int > 24, the return value is undefined because
+	// the consent string doesn't have room for more purposes than that.
 	PurposeAllowed(id consentconstants.Purpose) bool
 
 	// Determine if a given vendor has consent to collect or receive user info.
