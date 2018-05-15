@@ -1,5 +1,7 @@
 package vendorlist
 
+import "github.com/prebid/go-gdpr/consentconstants"
+
 // VendorList is an interface used to fetch information about an IAB Global Vendor list.
 // For the latest version, see: https://vendorlist.consensu.org/vendorlist.json
 type VendorList interface {
@@ -19,11 +21,11 @@ type VendorList interface {
 // Vendor describes which purposes a given vendor claims to use data for, in this vendor list.
 type Vendor interface {
 	// Purpose returns true if this vendor claims to use data for the given purpose, or false otherwise
-	Purpose(purposeID uint8) bool
+	Purpose(purposeID consentconstants.Purpose) bool
 
 	// LegitimateInterest retursn true if this vendor claims a "Legitimate Interest" to
 	// use data for the given purpose.
 	//
 	// For an explanation of legitimate interest, see https://www.gdpreu.org/the-regulation/key-concepts/legitimate-interest/
-	LegitimateInterest(purposeID uint8) bool
+	LegitimateInterest(purposeID consentconstants.Purpose) bool
 }

@@ -4,6 +4,8 @@ import (
 	"encoding/binary"
 	"errors"
 	"fmt"
+
+	"github.com/prebid/go-gdpr/consentconstants"
 )
 
 // Parse the metadata from the consent string.
@@ -48,8 +50,8 @@ func (c consentMetadata) MaxVendorID() uint16 {
 	return binary.BigEndian.Uint16([]byte{leftByte, rightByte})
 }
 
-func (c consentMetadata) PurposeAllowed(id uint8) bool {
+func (c consentMetadata) PurposeAllowed(id consentconstants.Purpose) bool {
 	// Purposes are stored in bits 132 - 155. The interface contract only defines behavior for ints in the range [1, 24]...
 	// so in the valid range, this won't even overflow a uint8.
-	return isSet(c, uint(id+131))
+	return isSet(c, uint(id)+131)
 }
