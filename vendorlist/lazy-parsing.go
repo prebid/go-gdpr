@@ -4,6 +4,7 @@ import (
 	"strconv"
 
 	"github.com/buger/jsonparser"
+	"github.com/prebid/go-gdpr/consentconstants"
 )
 
 // ParseLazily returns a view of the data which re-calculates things on each function call.
@@ -45,11 +46,11 @@ func (l lazyVendorList) Vendor(vendorID uint16) Vendor {
 
 type lazyVendor []byte
 
-func (l lazyVendor) Purpose(purposeID uint8) bool {
+func (l lazyVendor) Purpose(purposeID consentconstants.Purpose) bool {
 	return idExists(l, int(purposeID), "purposeIds")
 }
 
-func (l lazyVendor) LegitimateInterest(purposeID uint8) bool {
+func (l lazyVendor) LegitimateInterest(purposeID consentconstants.Purpose) bool {
 	return idExists(l, int(purposeID), "legIntPurposeIds")
 }
 

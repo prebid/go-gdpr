@@ -1,5 +1,7 @@
 package vendorconsent
 
+import "github.com/prebid/go-gdpr/consentconstants"
+
 // VendorConsents is a GDPR Vendor Consent string, as defined by IAB Europe. For technical details,
 // see https://github.com/InteractiveAdvertisingBureau/GDPR-Transparency-and-Consent-Framework/blob/master/Consent%20string%20and%20vendor%20list%20formats%20v1.1%20Final.md#vendor-consent-string-format-
 type VendorConsents interface {
@@ -21,9 +23,9 @@ type VendorConsents interface {
 
 	// Determine if the user has consented to use data for the given Purpose.
 	//
-	// Note that the Consent string only has room for at most 24 purposes... so the return value on inputs
-	// which are greater than 24 is undefined.
-	PurposeAllowed(id uint8) bool
+	// If the purpose is converted from an int > 24, the return value is undefined because
+	// the consent string doesn't have room for more purposes than that.
+	PurposeAllowed(id consentconstants.Purpose) bool
 
 	// Determine if a given vendor has consent to collect or receive user info.
 	//

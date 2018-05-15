@@ -2,6 +2,8 @@ package vendorconsent
 
 import (
 	"testing"
+
+	"github.com/prebid/go-gdpr/consentconstants"
 )
 
 func TestRangeSectionConsent(t *testing.T) {
@@ -28,7 +30,7 @@ func TestRangeSectionConsent(t *testing.T) {
 	purposesWithConsent := buildMap(3, 5, 6, 8, 11, 13, 14, 16, 18, 19, 21, 23, 24)
 	for i := uint8(1); i <= 24; i++ {
 		_, ok := purposesWithConsent[uint(i)]
-		assertBoolsEqual(t, ok, consent.PurposeAllowed(i))
+		assertBoolsEqual(t, ok, consent.PurposeAllowed(consentconstants.Purpose(i)))
 	}
 
 	vendorsLackingConsent := buildMap(2, 4, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 30, 31, 32, 33, 46)

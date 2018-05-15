@@ -3,6 +3,8 @@ package vendorlist
 import (
 	"encoding/json"
 	"errors"
+
+	"github.com/prebid/go-gdpr/consentconstants"
 )
 
 // ParseEagerly interprets and validates the Vendor List data up front, before returning it.
@@ -48,11 +50,11 @@ func parseVendor(contract vendorListVendorContract) parsedVendor {
 	return parsed
 }
 
-func mapify(input []uint8) map[uint8]struct{} {
-	m := make(map[uint8]struct{}, len(input))
+func mapify(input []uint8) map[consentconstants.Purpose]struct{} {
+	m := make(map[consentconstants.Purpose]struct{}, len(input))
 	var s struct{}
 	for _, value := range input {
-		m[value] = s
+		m[consentconstants.Purpose(value)] = s
 	}
 	return m
 }
@@ -75,11 +77,11 @@ func (l parsedVendorList) Vendor(vendorID uint16) Vendor {
 }
 
 type parsedVendor struct {
-	purposeIDs            map[uint8]struct{}
-	legitimateInterestIDs map[uint8]struct{}
+	purposeIDs            map[consentconstants.Purpose]struct{}
+	legitimateInterestIDs map[consentconstants.Purpose]struct{}
 }
 
-func (l parsedVendor) Purpose(purposeID uint8) (hasPurpose bool) {
+func (l parsedVendor) Purpose(purposeID consentconstants.Purpose) (hasPurpose bool) {
 	_, hasPurpose = l.purposeIDs[purposeID]
 	return
 }
@@ -88,7 +90,7 @@ func (l parsedVendor) Purpose(purposeID uint8) (hasPurpose bool) {
 // use data for the given purpose.
 //
 // For an explanation of legitimate interest, see https://www.gdpreu.org/the-regulation/key-concepts/legitimate-interest/
-func (l parsedVendor) LegitimateInterest(purposeID uint8) (hasLegitimateInterest bool) {
+func (l parsedVendor) LegitimateInterest(purposeID consentconstants.Purpose) (hasLegitimateInterest bool) {
 	_, hasLegitimateInterest = l.legitimateInterestIDs[purposeID]
 	return
 }
