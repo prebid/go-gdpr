@@ -50,11 +50,11 @@ func parseVendor(contract vendorListVendorContract) parsedVendor {
 	return parsed
 }
 
-func mapify(input []uint8) map[uint8]struct{} {
-	m := make(map[uint8]struct{}, len(input))
+func mapify(input []uint8) map[consentconstants.Purpose]struct{} {
+	m := make(map[consentconstants.Purpose]struct{}, len(input))
 	var s struct{}
 	for _, value := range input {
-		m[value] = s
+		m[consentconstants.Purpose(value)] = s
 	}
 	return m
 }
@@ -77,8 +77,8 @@ func (l parsedVendorList) Vendor(vendorID uint16) Vendor {
 }
 
 type parsedVendor struct {
-	purposeIDs            map[uint8]struct{}
-	legitimateInterestIDs map[uint8]struct{}
+	purposeIDs            map[consentconstants.Purpose]struct{}
+	legitimateInterestIDs map[consentconstants.Purpose]struct{}
 }
 
 func (l parsedVendor) Purpose(purposeID consentconstants.Purpose) (hasPurpose bool) {
