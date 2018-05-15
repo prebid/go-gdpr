@@ -14,6 +14,7 @@ package main
 import (
   "log"
 
+  "github.com/prebid/go-gdpr/consentconstants"
   "github.com/prebid/go-gdpr/vendorconsent"
 )
 
@@ -43,6 +44,7 @@ import (
   "log"
   "net/http"
 
+  "github.com/prebid/go-gdpr/consentconstants"
   "github.com/prebid/go-gdpr/vendorlist"
 )
 
@@ -57,8 +59,8 @@ func DemoVendorListParsing() {
   if vendor == nil {
     log.Print("Vendor 3 did not exist in the list.")
   } else {
-    log.Printf("Vendor 3 claimed a legitimate interest for Purpose 3? %t", vendor.LegitimateInterest(3))
-    log.Printf("Vendor 3 was used for Purpose 1? %t", vendor.Purpose(1))
+    log.Printf("Vendor 3 claimed a legitimate interest for ad selection, delivery, and reporting? %t", vendor.LegitimateInterest(consentconstants.AdSelectionDeliveryReporting))
+    log.Printf("Did Vendor 3 claim to store or retrieve info? %t", vendor.Purpose(consentconstants.InfoStorageAccess))
   }
 }
 ```
