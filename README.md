@@ -19,18 +19,18 @@ import (
 )
 
 func DemoConsentStringParsing() {
-  consentString := "BONciguONcjGKADACHENAOLS1rAHDAFAAEAASABQAMwAeACEAFw"
-  data, _ := base64.RawURLEncoding.DecodeString(encodedString)
+	encodedString := "BONciguONcjGKADACHENAOLS1rAHDAFAAEAASABQAMwAeACEAFw"
+	data, _ := base64.RawURLEncoding.DecodeString(encodedString)
 
-  consent, err := vendorconsent.Parse(data)
-  if err != nil {
-    log.Printf("Data was not a valid consent string: %v", err)
-    return
-  }
+	consent, err := vendorconsent.Parse(data)
+	if err != nil {
+		log.Printf("Data was not a valid consent string: %v", err)
+		return
+	}
 
-  log.Printf("There are %d vendors in this consent string.", consent.MaxVendorID())
-  log.Printf("This consent string refers to version %d of the Global Vendor List.", consent.VendorListVersion())
-  log.Printf("Vendor %d has the user's consent? %t", 3, consent.HasConsent(3))
+	log.Printf("There are %d vendors in this consent string.", consent.MaxVendorID())
+	log.Printf("This consent string refers to version %d of the Global Vendor List.", consent.VendorListVersion())
+	log.Printf("Vendor %d has the user's consent? %t", 3, consent.VendorConsent(3))
 }
 ```
 
@@ -52,7 +52,7 @@ func DemoVendorListParsing() {
   resp, _ := http.Get("https://vendorlist.consensu.org/vendorlist.json")
   data, _ := ioutil.ReadAll(resp.Body)
 
-  vendors := ParseLazily(data)
+  vendors := vendorlist.ParseLazily(data)
   log.Printf("The Vendor List Version is %d.", vendors.Version())
 
   vendor := vendors.Vendor(3)
