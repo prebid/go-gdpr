@@ -1,6 +1,10 @@
 package vendorconsent
 
-import "testing"
+import (
+	"testing"
+
+	"github.com/prebid/go-gdpr/consentconstants"
+)
 
 func TestBitField(t *testing.T) {
 	// String built using http://acdn.adnxs.com/cmp/docs/#/tools/vendor-cookie-encoder
@@ -26,7 +30,7 @@ func TestBitField(t *testing.T) {
 	purposesAllowed := buildMap(1, 2, 3, 5, 6, 7, 9, 12, 13, 15, 17, 19, 20, 23, 24)
 	for i := uint8(1); i <= 24; i++ {
 		_, ok := purposesAllowed[uint(i)]
-		assertBoolsEqual(t, ok, consent.PurposeAllowed(i))
+		assertBoolsEqual(t, ok, consent.PurposeAllowed(consentconstants.Purpose(i)))
 	}
 
 	vendorsWithConsent := buildMap(1, 2, 4, 7, 9, 10)
