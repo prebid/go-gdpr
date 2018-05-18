@@ -38,7 +38,8 @@ func (c consentMetadata) Version() uint8 {
 }
 
 func (c consentMetadata) VendorListVersion() uint16 {
-	rightByte := c[16] & 0xf0 >> 4
+	// The vendor list version is stored in bits 120 - 131
+	rightByte := ((c[16] & 0xf0) >> 4) | ((c[15] & 0x0f) << 4)
 	leftByte := c[15] >> 4
 	return binary.BigEndian.Uint16([]byte{leftByte, rightByte})
 }
