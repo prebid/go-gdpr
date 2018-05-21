@@ -86,6 +86,13 @@ func decode(t *testing.T, encodedString string) []byte {
 	return data
 }
 
+func assertStringsEqual(t *testing.T, expected string, actual string) {
+	t.Helper()
+	if actual != expected {
+		t.Errorf("Strings were not equal. Expected %s, actual %s", expected, actual)
+	}
+}
+
 func assertUInt8sEqual(t *testing.T, expected uint8, actual uint8) {
 	t.Helper()
 	if actual != expected {

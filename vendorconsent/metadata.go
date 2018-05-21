@@ -58,8 +58,11 @@ func (c consentMetadata) ConsentScreen() uint8 {
 }
 
 func (c consentMetadata) ConsentLanguage() string {
-	// Stored in bits 108-119. Each letter is stored as 6 bits, with A=0 and Z=25
-	return ""
+	// Stored in bits 108-119... which is [0000xxxx xxxxxxxx] starting at the 14th byte.
+	// Each letter is stored as 6 bits, with A=0 and Z=25
+	leftChar := ((c[13] & 0x0f) << 2) | c[14]>>6
+	rightChar := c[14] & 0x3f
+	return string([]byte{leftChar + 65, rightChar + 65}) // Unicode A-Z is 65-90
 }
 
 func (c consentMetadata) VendorListVersion() uint16 {
