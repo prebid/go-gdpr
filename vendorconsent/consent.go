@@ -8,6 +8,18 @@ type VendorConsents interface {
 	// The version of the Consent string.
 	Version() uint8
 
+	// The ID of the CMP used to update the consent string.
+	CmpID() uint16
+
+	// The version of the CMP used to update the consent string
+	CmpVersion() uint16
+
+	// The number of the CMP screen where consent was given
+	ConsentScreen() uint8
+
+	// The two-letter ISO639-1 language code used by the CMP to ask for consent
+	ConsentLanguage() string
+
 	// The VendorListVersion which is needed to interpret this consent string.
 	//
 	// The IAB is hosting these on their webpage. For example, version 2 of the
