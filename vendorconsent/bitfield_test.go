@@ -9,12 +9,6 @@ import (
 func TestBitField(t *testing.T) {
 	// String built using http://acdn.adnxs.com/cmp/docs/#/tools/vendor-cookie-encoder
 	// This sample includes a BitField.
-	//
-	// The values which don't have parsing functions implemented yet are listed below for future tests.
-	//
-	// cookie version = 1
-	// created = Sun May 06 2018 12:31:13 GMT-0400 (EDT) (binary 001110001101010101111100101000101010)
-	// last updated = Mon May 07 2018 01:42:15 GMT-0400 (EDT) (binary 001110001101010111110000100000100110)
 	consent, err := Parse(decode(t, "BONV8oqONXwgmADACHENAO7pqzAAppY"))
 	assertNilError(t, err)
 	assertUInt8sEqual(t, 1, consent.Version())
