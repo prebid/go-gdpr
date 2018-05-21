@@ -17,7 +17,7 @@ type VendorConsents interface {
 	// The number of the CMP screen where consent was given
 	ConsentScreen() uint8
 
-	// The two-letter ISO639-1 language code used by the CMP to ask for consent
+	// The two-letter ISO639-1 language code used by the CMP to ask for consent, in uppercase.
 	ConsentLanguage() string
 
 	// The VendorListVersion which is needed to interpret this consent string.
