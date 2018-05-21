@@ -1,12 +1,22 @@
 package vendorconsent
 
-import "github.com/prebid/go-gdpr/consentconstants"
+import (
+	"time"
+
+	"github.com/prebid/go-gdpr/consentconstants"
+)
 
 // VendorConsents is a GDPR Vendor Consent string, as defined by IAB Europe. For technical details,
 // see https://github.com/InteractiveAdvertisingBureau/GDPR-Transparency-and-Consent-Framework/blob/master/Consent%20string%20and%20vendor%20list%20formats%20v1.1%20Final.md#vendor-consent-string-format-
 type VendorConsents interface {
 	// The version of the Consent string.
 	Version() uint8
+
+	// The time that the consent string was first created
+	Created() time.Time
+
+	// The time that the consent string was last updated
+	LastUpdated() time.Time
 
 	// The ID of the CMP used to update the consent string.
 	CmpID() uint16

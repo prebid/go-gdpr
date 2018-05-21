@@ -4,6 +4,7 @@ import (
 	"encoding/binary"
 	"errors"
 	"fmt"
+	"time"
 
 	"github.com/prebid/go-gdpr/consentconstants"
 )
@@ -36,6 +37,42 @@ type consentMetadata []byte
 func (c consentMetadata) Version() uint8 {
 	// Stored in bits 0-5
 	return uint8(c[0] >> 2)
+}
+
+const (
+	nanosPerDeci = 100000000
+	decisPerOne  = 10
+)
+
+func (c consentMetadata) Created() time.Time {
+	_ = c[5]
+	// Stored in bits 6-41.. which is [000000xx xxxxxxxx xxxxxxxx xxxxxxxx xxxxxxxx xx000000] starting at the 1st byte
+	deciseconds := int64(binary.BigEndian.Uint64([]byte{
+		0x0,
+		0x0,
+		0x0,
+		(c[0]&0x3)<<2 | c[1]>>6,
+		c[1]<<2 | c[2]>>6,
+		c[2]<<2 | c[3]>>6,
+		c[3]<<2 | c[4]>>6,
+		c[4]<<2 | c[5]>>6,
+	}))
+	return time.Unix(deciseconds/decisPerOne, (deciseconds%decisPerOne)*nanosPerDeci)
+}
+
+func (c consentMetadata) LastUpdated() time.Time {
+	// Stored in bits 42-77... which is [00xxxxxx xxxxxxxx xxxxxxxx xxxxxxxx xxxxxx00 ] starting at the 6th byte
+	deciseconds := int64(binary.BigEndian.Uint64([]byte{
+		0x0,
+		0x0,
+		0x0,
+		(c[5] >> 2) & 0x0f,
+		c[5]<<6 | c[6]>>2,
+		c[6]<<6 | c[7]>>2,
+		c[7]<<6 | c[8]>>2,
+		c[8]<<6 | c[9]>>2,
+	}))
+	return time.Unix(deciseconds/decisPerOne, (deciseconds%decisPerOne)*nanosPerDeci)
 }
 
 func (c consentMetadata) CmpID() uint16 {

@@ -1,6 +1,35 @@
 package vendorconsent
 
-import "testing"
+import (
+	"testing"
+	"time"
+)
+
+func TestCreatedDate(t *testing.T) {
+	consent, err := Parse(decode(t, "BIRAfK8OOHsDFABABBAAABAAAAAAEA"))
+	assertNilError(t, err)
+	created := consent.Created().UTC()
+	year, month, day := created.Date()
+	assertIntsEqual(t, 1998, year)
+	assertIntsEqual(t, int(time.February), int(month))
+	assertIntsEqual(t, 15, day)
+	assertIntsEqual(t, 7, created.Hour())
+	assertIntsEqual(t, 24, created.Minute())
+	assertIntsEqual(t, 54, created.Second())
+}
+
+func TestLastUpdated(t *testing.T) {
+	consent, err := Parse(decode(t, "BIRAfK8OOHsDFABABBAAABAAAAAAEA"))
+	assertNilError(t, err)
+	updated := consent.LastUpdated().UTC()
+	year, month, day := updated.Date()
+	assertIntsEqual(t, 2018, year)
+	assertIntsEqual(t, int(time.May), int(month))
+	assertIntsEqual(t, 21, day)
+	assertIntsEqual(t, 18, updated.Hour())
+	assertIntsEqual(t, 43, updated.Minute())
+	assertIntsEqual(t, 18, updated.Second())
+}
 
 func TestLargeVendorListVersion(t *testing.T) {
 	consent, err := Parse(decode(t, "BON96hFON96hFABABBAA4yAAAAAAEA"))
