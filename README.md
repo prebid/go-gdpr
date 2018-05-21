@@ -1,4 +1,5 @@
   <a href="https://goreportcard.com/report/github.com/prebid/go-gdpr"><img src="https://goreportcard.com/badge/github.com/prebid/go-gdpr" /></a>
+ [![GoDoc](https://godoc.org/github.com/prebid/go-gdpr?status.svg)](https://godoc.org/github.com/prebid/go-gdpr)
 
 # Go Support for GDPR
 
