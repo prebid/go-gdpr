@@ -72,9 +72,7 @@ func TestInvalidConsentStrings(t *testing.T) {
 func assertInvalid(t *testing.T, urlEncodedString string, expectError string) {
 	t.Helper()
 	data, err := base64.RawURLEncoding.DecodeString(urlEncodedString)
-	if err != nil {
-		t.Fatalf("Failed to base64-decode string %s. Error: %v", urlEncodedString, err)
-	}
+	assertNilError(t, err)
 	if consent, err := Parse(data); err == nil {
 		t.Errorf("base64 URL-encoded string %s was considered valid, but shouldn't be. MaxVendorID: %d. len(data): %d", urlEncodedString, consent.MaxVendorID(), len(data))
 	} else if err.Error() != expectError {
@@ -84,10 +82,15 @@ func assertInvalid(t *testing.T, urlEncodedString string, expectError string) {
 
 func decode(t *testing.T, encodedString string) []byte {
 	data, err := base64.RawURLEncoding.DecodeString(encodedString)
-	if err != nil {
-		t.Fatalf("Failed to base64-decode string %s. Error: %v", encodedString, err)
-	}
+	assertNilError(t, err)
 	return data
+}
+
+func assertStringsEqual(t *testing.T, expected string, actual string) {
+	t.Helper()
+	if actual != expected {
+		t.Errorf("Strings were not equal. Expected %s, actual %s", expected, actual)
+	}
 }
 
 func assertUInt8sEqual(t *testing.T, expected uint8, actual uint8) {

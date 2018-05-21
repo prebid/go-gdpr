@@ -34,7 +34,35 @@ func parseMetadata(data []byte) (consentMetadata, error) {
 type consentMetadata []byte
 
 func (c consentMetadata) Version() uint8 {
+	// Stored in bits 0-5
 	return uint8(c[0] >> 2)
+}
+
+func (c consentMetadata) CmpID() uint16 {
+	// Stored in bits 78-89... which is [000000xx xxxxxxxx xx000000] starting at the 10th byte
+	leftByte := ((c[9] & 0x03) << 2) | c[10]>>6
+	rightByte := (c[10] << 2) | c[11]>>6
+	return binary.BigEndian.Uint16([]byte{leftByte, rightByte})
+}
+
+func (c consentMetadata) CmpVersion() uint16 {
+	// Stored in bits 90-101.. which is [00xxxxxx xxxxxx00] starting at the 12th byte
+	leftByte := (c[11] >> 2) & 0x0f
+	rightByte := (c[11] << 6) | c[12]>>2
+	return binary.BigEndian.Uint16([]byte{leftByte, rightByte})
+}
+
+func (c consentMetadata) ConsentScreen() uint8 {
+	// Stored in bits 102-107.. which is [000000xx xxxx0000] starting at the 13th byte
+	return uint8(((c[12] & 0x03) << 4) | c[13]>>4)
+}
+
+func (c consentMetadata) ConsentLanguage() string {
+	// Stored in bits 108-119... which is [0000xxxx xxxxxxxx] starting at the 14th byte.
+	// Each letter is stored as 6 bits, with A=0 and Z=25
+	leftChar := ((c[13] & 0x0f) << 2) | c[14]>>6
+	rightChar := c[14] & 0x3f
+	return string([]byte{leftChar + 65, rightChar + 65}) // Unicode A-Z is 65-90
 }
 
 func (c consentMetadata) VendorListVersion() uint16 {

@@ -15,15 +15,13 @@ func TestRangeSectionConsent(t *testing.T) {
 	// cookie version = 1
 	// created = Tue May 08 2018 12:31:13 GMT-0400 (EDT) (binary 001110001101011100100010100000101110)
 	// last updated = Tue May 08 2018 12:35:13 GMT-0400 (EDT) (binary 001110001101011100100011000110001010)
-	// cmpId = 3
-	// cmpVersion = 2
-	// consentScreen = 7
-	// consentLanguage = "en" (binary 000100001101)
 	consent, err := Parse(decode(t, "BONciguONcjGKADACHENAOLS1rAHDAFAAEAASABQAMwAeACEAFw"))
-	if err != nil {
-		t.Fatalf("Failed to parse valid consent string: %v", err)
-	}
+	assertNilError(t, err)
 	assertUInt8sEqual(t, 1, consent.Version())
+	assertUInt16sEqual(t, 3, consent.CmpID())
+	assertUInt16sEqual(t, 2, consent.CmpVersion())
+	assertUInt8sEqual(t, 7, consent.ConsentScreen())
+	assertStringsEqual(t, "EN", consent.ConsentLanguage())
 	assertUInt16sEqual(t, 14, consent.VendorListVersion())
 	assertUInt16sEqual(t, 112, consent.MaxVendorID())
 
@@ -57,9 +55,7 @@ func TestParseUInt16(t *testing.T) {
 func doParseIntTest(t *testing.T, data []byte, offset int, expected int) {
 	t.Helper()
 	parsedVal, err := parseUInt16(data, uint(offset))
-	if err != nil {
-		t.Fatalf("Error parsing uint16: %v", err)
-	}
+	assertNilError(t, err)
 	if parsedVal != uint16(expected) {
 		t.Errorf("Failed to parse value. Got %d", parsedVal)
 	}
