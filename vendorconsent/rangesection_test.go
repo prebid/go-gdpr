@@ -9,12 +9,6 @@ import (
 func TestRangeSectionConsent(t *testing.T) {
 	// String built using http://acdn.adnxs.com/cmp/docs/#/tools/vendor-cookie-encoder
 	// This sample encodes a mix of Single- and Range-typed consent exceptions.
-	//
-	// The values which don't have parsing functions implemented yet are listed below for future tests.
-	//
-	// cookie version = 1
-	// created = Tue May 08 2018 12:31:13 GMT-0400 (EDT) (binary 001110001101011100100010100000101110)
-	// last updated = Tue May 08 2018 12:35:13 GMT-0400 (EDT) (binary 001110001101011100100011000110001010)
 	consent, err := Parse(decode(t, "BONciguONcjGKADACHENAOLS1rAHDAFAAEAASABQAMwAeACEAFw"))
 	assertNilError(t, err)
 	assertUInt8sEqual(t, 1, consent.Version())
