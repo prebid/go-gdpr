@@ -69,6 +69,19 @@ func TestInvalidConsentStrings(t *testing.T) {
 	assertInvalid(t, "BONciguONcjGKADACHENAOLS1rAAPABgAEAAIA", "bit 186 range entry excludes vendors [2, 1]. The start should be less than the end")
 }
 
+func TestParseInvalidString(t *testing.T) {
+	_, err := ParseString("/")
+	if err == nil {
+		t.Error("Strings with invalid base64 characters should be invalid.")
+	}
+}
+
+func TestParseValidString(t *testing.T) {
+	parsed, err := ParseString("BONV8oqONXwgmADACHENAO7pqzAAppY")
+	assertNilError(t, err)
+	assertUInt16sEqual(t, 14, parsed.VendorListVersion())
+}
+
 func assertInvalid(t *testing.T, urlEncodedString string, expectError string) {
 	t.Helper()
 	data, err := base64.RawURLEncoding.DecodeString(urlEncodedString)
