@@ -1,6 +1,7 @@
 package vendorconsent
 
 import (
+	"encoding/base64"
 	"time"
 
 	"github.com/prebid/go-gdpr/consentconstants"
@@ -58,6 +59,15 @@ type VendorConsents interface {
 	// It is the caller's responsibility to get the right Vendor List version for the semantics of the ID.
 	// For more information, see VendorListVersion().
 	VendorConsent(id uint16) bool
+}
+
+// ParseString parses a Raw (unpadded) base64 URL encoded string.
+func ParseString(consent string) (VendorConsents, error) {
+	decoded, err := base64.RawURLEncoding.DecodeString(consent)
+	if err != nil {
+		return nil, err
+	}
+	return Parse(decoded)
 }
 
 // Parse the vendor consent data from the string. This string should *not* be encoded (by base64 or any other encoding).
