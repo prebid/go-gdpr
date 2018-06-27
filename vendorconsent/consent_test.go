@@ -86,8 +86,13 @@ func assertInvalid(t *testing.T, urlEncodedString string, expectError string) {
 	t.Helper()
 	data, err := base64.RawURLEncoding.DecodeString(urlEncodedString)
 	assertNilError(t, err)
+	assertInvalidBytes(t, data, expectError)
+}
+
+func assertInvalidBytes(t *testing.T, data []byte, expectError string) {
+	t.Helper()
 	if consent, err := Parse(data); err == nil {
-		t.Errorf("base64 URL-encoded string %s was considered valid, but shouldn't be. MaxVendorID: %d. len(data): %d", urlEncodedString, consent.MaxVendorID(), len(data))
+		t.Errorf("base64 URL-encoded string %s was considered valid, but shouldn't be. MaxVendorID: %d. len(data): %d", base64.RawURLEncoding.EncodeToString(data), consent.MaxVendorID(), len(data))
 	} else if err.Error() != expectError {
 		t.Errorf(`error messages did not match. Expected "%s", got "%s": %v`, expectError, err.Error(), err)
 	}
