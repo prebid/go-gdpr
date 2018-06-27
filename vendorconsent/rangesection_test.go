@@ -32,13 +32,8 @@ func TestRangeSectionConsent(t *testing.T) {
 	}
 }
 
+// Prevents #10
 func TestInvalidRangeEdgeCase(t *testing.T) {
-	// This consent string has 7 single-element RangeEntries exceptions in its RangeSection.
-	// ...but then we truncate it so that only 6 well-formed exceptions exist.
-	//
-	// This catches an edge case where the consent string _is_ malformed, because it has fewer
-	// RangeEntry elements than its NumEntries report... but the "missing" one happens to be
-	// byte-aligned.
 	data := decode(t, "BOQA9AtOQA9AtABABBAAABAAAAAGSAHAACAAMAAoABwAEgALAAaA")
 	data = data[:36]
 	assertInvalidBytes(t, data[:36], "bit 288 was supposed to start a new RangeEntry, but the consent string was only 36 bytes long")
