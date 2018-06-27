@@ -32,6 +32,13 @@ func TestRangeSectionConsent(t *testing.T) {
 	}
 }
 
+// Prevents #10
+func TestInvalidRangeEdgeCase(t *testing.T) {
+	data := decode(t, "BOQA9AtOQA9AtABABBAAABAAAAAGSAHAACAAMAAoABwAEgALAAaA")
+	data = data[:36]
+	assertInvalidBytes(t, data[:36], "bit 288 was supposed to start a new RangeEntry, but the consent string was only 36 bytes long")
+}
+
 func TestParseUInt16(t *testing.T) {
 	// Start with 01100000 00000000 00100000
 	// Expect 00000000 00000001

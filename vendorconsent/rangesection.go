@@ -47,6 +47,10 @@ func parseNumEntries(data []byte) uint16 {
 // parseException parses a RangeSection exception starting from the initial bit.
 // It returns the exception, as well as the number of bits consumed by the parsing.
 func parseException(data consentMetadata, initialBit uint) (rangeException, uint, error) {
+	// Fixes #10
+	if uint(len(data)) <= initialBit/8 {
+		return nil, 0, fmt.Errorf("bit %d was supposed to start a new RangeEntry, but the consent string was only %d bytes long", initialBit, len(data))
+	}
 	// If the first bit is set, it's a Range of IDs
 	if isSet(data, initialBit) {
 		start, err := parseUInt16(data, initialBit+1)
