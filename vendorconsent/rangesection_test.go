@@ -32,6 +32,21 @@ func TestRangeSectionConsent(t *testing.T) {
 	}
 }
 
+func TestRangeEdgeCase(t *testing.T) {
+	// This consent string has 7 single-element RangeEntries exceptions in its RangeSection.
+	// ...but then we truncate it so that only 6 well-formed exceptions exist.
+	//
+	// This catches an edge case where the consent string _is_ malformed, because it has fewer
+	// RangeEntry elements than its NumEntries report... but the "missing" one happens to be
+	// byte-aligned.
+	data := decode(t, "BOQA9AtOQA9AtABABBAAABAAAAAGSAHAACAAMAAoABwAEgALAAaA")
+	data = data[:36]
+	_, err := Parse(data)
+	if err == nil {
+		t.Errorf("This consent string was malformed, but no error was returned.")
+	}
+}
+
 func TestParseUInt16(t *testing.T) {
 	// Start with 01100000 00000000 00100000
 	// Expect 00000000 00000001
