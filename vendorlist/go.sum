@@ -1,0 +1,5 @@
+github.com/buger/jsonparser v0.0.0-20180318095312-2cac668e8456/go.mod h1:bbYlZJ7hK1yFx9hf58LP0zeX7UjIGs20ufpu3evjr+s=
+github.com/buger/jsonparser v0.0.0-20191204142016-1a29609e0929 h1:MW/JDk68Rny52yI0M0N+P8lySNgB+NhpI/uAmhgOhUM=
+github.com/buger/jsonparser v0.0.0-20191204142016-1a29609e0929/go.mod h1:tgcrVJ81GPSF0mz+0nu1Xaz0fazGPrmmJfJtxjbHhUQ=
+github.com/prebid/go-gdpr v0.6.0 h1:/GKrygGkUbsgd96HIkjAu7/6CHtRedvcojRtfAd4Igc=
+github.com/prebid/go-gdpr v0.6.0/go.mod h1:FPY0uxSrl9/Mz237LnPo3ge4aCG0wQ9FWf2b4WhwNn0=

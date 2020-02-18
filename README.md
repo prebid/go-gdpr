@@ -35,6 +35,10 @@ func DemoConsentStringParsing() {
 	log.Printf("This consent string refers to version %d of the Global Vendor List.", consent.VendorListVersion())
 	log.Printf("Vendor %d has the user's consent? %t", 3, consent.VendorConsent(3))
 }
+
+func main() {
+	DemoConsentStringParsing()
+}
 ```
 
 ### Vendor List Parsing
@@ -65,6 +69,10 @@ func DemoVendorListParsing() {
     log.Printf("Vendor 3 claimed a legitimate interest for ad selection, delivery, and reporting? %t", vendor.LegitimateInterest(consentconstants.AdSelectionDeliveryReporting))
     log.Printf("Did Vendor 3 claim to store or retrieve info? %t", vendor.Purpose(consentconstants.InfoStorageAccess))
   }
+}
+
+func main() {
+	DemoVendorListParsing()
 }
 ```
 
