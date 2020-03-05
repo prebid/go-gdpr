@@ -2,6 +2,7 @@ package vendorconsent
 
 import (
 	"encoding/base64"
+	"strings"
 	"time"
 
 	"github.com/prebid/go-gdpr/consentconstants"
@@ -63,9 +64,14 @@ type VendorConsents interface {
 
 // ParseString parses a Raw (unpadded) base64 URL encoded string.
 func ParseString(consent string) (VendorConsents, error) {
-	decoded, err := base64.RawURLEncoding.DecodeString(consent)
+	pieces := strings.Split(consent, ".")
+	decoded, err := base64.RawURLEncoding.DecodeString(pieces[0])
 	if err != nil {
 		return nil, err
+	}
+	version := uint8(consent[0] >> 2)
+	if version == 2 {
+		return Parse20(decoded)
 	}
 	return Parse(decoded)
 }
@@ -84,6 +90,22 @@ func Parse(data []byte) (VendorConsents, error) {
 	}
 
 	return parseBitField(metadata)
+}
+
+// Parse the TCF 2.0 vendor consent data from the string. This string should *not* be encoded (by base64 or any other encoding).
+// If the data is malformed and cannot be interpreted as a vendor consent string, this will return an error.
+func Parse20(data []byte) (VendorConsents, error) {
+	metadata, err := parseMetadata20(data)
+	if err != nil {
+		return nil, err
+	}
+
+	// Bit 229 determines whether or not the consent string encodes Vendor data in a RangeSection or BitField.
+	if isSet(data, 229) {
+		return parseRangeSection20(metadata)
+	}
+
+	return parseBitField20(metadata)
 }
 
 // Returns true if the bitIndex'th bit in data is a 1, and false if it's a 0.
