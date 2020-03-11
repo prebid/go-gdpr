@@ -31,36 +31,30 @@ func TestLastUpdated20(t *testing.T) {
 	assertIntsEqual(t, 49, updated.Second())
 }
 
-func TestLargeVendorListVersion20(t *testing.T) {
-	consent, err := Parse(decode(t, "BON96hFON96hFABABBAA4yAAAAAAEA"))
-	assertNilError(t, err)
-	assertUInt16sEqual(t, 3634, consent.VendorListVersion())
-}
-
 func TestLargeCmpID20(t *testing.T) {
-	consent, err := Parse(decode(t, "BOOG3gbOOG3gbFZABBAAABAAAAAAEA"))
+	consent, err := Parse20(decode(t, "COv_46cOv_46cFZFZTENAPCAAAAAAAAAAAAAE5QBwABAAXABVAH8AgAElgJkATkAYEAgAAQACAAGAAXABUAH8AQIAwAAAA"))
 	assertNilError(t, err)
 	assertUInt16sEqual(t, 345, consent.CmpID())
 }
 
 func TestLargeCmpVersion20(t *testing.T) {
-	consent, err := Parse(decode(t, "BOOG4uyOOG4uyABFZBAAABAAAAAAEA"))
+	consent, err := Parse20(decode(t, "COv_46cOv_46cFZFZTENAPCAAAAAAAAAAAAAE5QBwABAAXABVAH8AgAElgJkATkAYEAgAAQACAAGAAXABUAH8AQIAwAAAA"))
 	assertNilError(t, err)
 	assertUInt16sEqual(t, 345, consent.CmpVersion())
 }
 
 func TestLargeConsentScreen20(t *testing.T) {
-	consent, err := Parse(decode(t, "BOOG4uyOOG4uyABFZTAAABAAAAAAEA"))
+	consent, err := Parse20(decode(t, "COv_46cOv_46cFZFZTENAPCAAAAAAAAAAAAAE5QBwABAAXABVAH8AgAElgJkATkAYEAgAAQACAAGAAXABUAH8AQIAwAAAA"))
 	assertNilError(t, err)
 	assertUInt8sEqual(t, 19, consent.ConsentScreen())
 }
 
 func TestLanguageExtremes20(t *testing.T) {
-	consent, err := Parse(decode(t, "BOOG9-6OOG9-6ABABBAZABAAAAAAEA"))
+	consent, err := Parse20(decode(t, "COv_46cOv_46cFZFZTBGAPCAAAAAAAAAAAAAE5QBwABAAXABVAH8AgAElgJkATkAYEAgAAQACAAGAAXABUAH8AQIAwAAAA"))
 	assertNilError(t, err)
-	assertStringsEqual(t, "AZ", consent.ConsentLanguage())
+	assertStringsEqual(t, "BG", consent.ConsentLanguage())
 
-	consent, err = Parse(decode(t, "BOOG9-6OOG9-6ABABBZAABAAAAAAEA"))
+	consent, err = Parse20(decode(t, "COv_46cOv_46cFZFZTSVAPCAAAAAAAAAAAAAE5QBwABAAXABVAH8AgAElgJkATkAYEAgAAQACAAGAAXABUAH8AQIAwAAAA"))
 	assertNilError(t, err)
-	assertStringsEqual(t, "ZA", consent.ConsentLanguage())
+	assertStringsEqual(t, "SV", consent.ConsentLanguage())
 }

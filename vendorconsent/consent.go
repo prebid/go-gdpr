@@ -69,7 +69,7 @@ func ParseString(consent string) (VendorConsents, error) {
 	if err != nil {
 		return nil, err
 	}
-	version := uint8(consent[0] >> 2)
+	version := uint8(decoded[0] >> 2)
 	if version == 2 {
 		return Parse20(decoded)
 	}
@@ -92,7 +92,7 @@ func Parse(data []byte) (VendorConsents, error) {
 	return parseBitField(metadata)
 }
 
-// Parse the TCF 2.0 vendor consent data from the string. This string should *not* be encoded (by base64 or any other encoding).
+// Parse20 parses the TCF 2.0 vendor consent data from the string. This string should *not* be encoded (by base64 or any other encoding).
 // If the data is malformed and cannot be interpreted as a vendor consent string, this will return an error.
 func Parse20(data []byte) (VendorConsents, error) {
 	metadata, err := parseMetadata20(data)

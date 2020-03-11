@@ -12,8 +12,8 @@ import (
 // Parse the metadata from the consent string.
 // This returns an error if the input is too short to answer questions about that data.
 func parseMetadata20(data []byte) (consentMetadata20, error) {
-	if len(data) < 22 {
-		return nil, fmt.Errorf("vendor consent strings are at least 22 bytes long. This one was %d", len(data))
+	if len(data) < 30 {
+		return nil, fmt.Errorf("vendor consent strings are at least 30 bytes long. This one was %d", len(data))
 	}
 	metadata := consentMetadata20(data)
 	if metadata.MaxVendorID() < 1 {
