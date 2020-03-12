@@ -1,6 +1,8 @@
 package vendorlist
 
 import (
+	"strconv"
+
 	"github.com/buger/jsonparser"
 	"github.com/prebid/go-gdpr/consentconstants"
 )
@@ -27,16 +29,8 @@ func (l lazyVendorList20) Version() uint16 {
 }
 
 func (l lazyVendorList20) Vendor(vendorID uint16) Vendor {
-	var vendorBytes []byte
-	jsonparser.ArrayEach(l, func(value []byte, dataType jsonparser.ValueType, offset int, err error) {
-		if val, ok := lazyParseInt(value, "id"); ok {
-			if uint16(val) == vendorID {
-				vendorBytes = value
-			}
-		}
-	}, "vendors")
-
-	if len(vendorBytes) > 0 {
+	vendorBytes, _, _, err := jsonparser.Get(l, "vendors", strconv.FormatUint(uint64(vendorID), 10))
+	if err == nil && len(vendorBytes) > 0 {
 		return lazyVendor20(vendorBytes)
 	}
 	return nil

@@ -33,9 +33,8 @@ func ParseEagerly20(data []byte) (VendorList, error) {
 		vendors: make(map[uint16]parsedVendor20, len(contract.Vendors)),
 	}
 
-	for i := 0; i < len(contract.Vendors); i++ {
-		thisVendor := contract.Vendors[i]
-		parsedList.vendors[thisVendor.ID] = parseVendor20(thisVendor)
+	for _, v := range contract.Vendors {
+		parsedList.vendors[v.ID] = parseVendor20(v)
 	}
 
 	return parsedList, nil
@@ -95,8 +94,8 @@ func (l parsedVendor20) LegitimateInterest(purposeID consentconstants.Purpose) (
 }
 
 type vendorListContract20 struct {
-	Version uint16                       `json:"vendorListVersion"`
-	Vendors []vendorListVendorContract20 `json:"vendors"`
+	Version uint16                                `json:"vendorListVersion"`
+	Vendors map[string]vendorListVendorContract20 `json:"vendors"`
 }
 
 type vendorListVendorContract20 struct {
