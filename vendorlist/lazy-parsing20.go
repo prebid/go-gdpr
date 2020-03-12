@@ -29,7 +29,7 @@ func (l lazyVendorList20) Version() uint16 {
 }
 
 func (l lazyVendorList20) Vendor(vendorID uint16) Vendor {
-	vendorBytes, _, _, err := jsonparser.Get(l, "vendors", strconv.FormatUint(uint64(vendorID), 10))
+	vendorBytes, _, _, err := jsonparser.Get(l, "vendors", strconv.Itoa(int(vendorID)))
 	if err == nil && len(vendorBytes) > 0 {
 		return lazyVendor20(vendorBytes)
 	}
