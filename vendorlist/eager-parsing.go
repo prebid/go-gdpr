@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 
+	"github.com/prebid/go-gdpr/api"
 	"github.com/prebid/go-gdpr/consentconstants"
 )
 
@@ -15,7 +16,7 @@ import (
 //   2. You need strong input validation and good error messages.
 //
 // Otherwise, you may get better performance with ParseLazily.
-func ParseEagerly(data []byte) (VendorList, error) {
+func ParseEagerly(data []byte) (api.VendorList, error) {
 	var contract vendorListContract
 	if err := json.Unmarshal(data, &contract); err != nil {
 		return nil, err
@@ -68,7 +69,7 @@ func (l parsedVendorList) Version() uint16 {
 	return l.version
 }
 
-func (l parsedVendorList) Vendor(vendorID uint16) Vendor {
+func (l parsedVendorList) Vendor(vendorID uint16) api.Vendor {
 	vendor, ok := l.vendors[vendorID]
 	if ok {
 		return vendor

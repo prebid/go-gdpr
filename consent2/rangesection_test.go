@@ -1,13 +1,13 @@
-package vendorconsent
+package consent2
 
 import (
 	"testing"
 )
 
-func TestRangeSectionConsent20(t *testing.T) {
+func TestRangeSectionConsent(t *testing.T) {
 	// String built using http://iabtcf.com/#/encode
 	// This sample encodes a mix of Single- and Range-typed consent exceptions.
-	consent, err := Parse20(decode(t, "COv_46cOv_46cADACHENAPCAAAAAAAAAAAAAE5QBwABAAXABVAH8AgAElgJkATkAYEAgAAQACAAGAAXABUAH8AQIAwAAAA"))
+	consent, err := Parse(decode(t, "COv_46cOv_46cADACHENAPCAAAAAAAAAAAAAE5QBwABAAXABVAH8AgAElgJkATkAYEAgAAQACAAGAAXABUAH8AQIAwAAAA"))
 	assertNilError(t, err)
 	assertUInt8sEqual(t, 2, consent.Version())
 	assertUInt16sEqual(t, 3, consent.CmpID())
@@ -32,8 +32,8 @@ func TestRangeSectionConsent20(t *testing.T) {
 }
 
 // Prevents #10
-func TestInvalidRangeEdgeCase20(t *testing.T) {
+func TestInvalidRangeEdgeCase(t *testing.T) {
 	data := decode(t, "COwDzqZOwDzqZN4ABMENAPCAAP4AAP-AAAhoAFQAYABgAOABQAAAAA")
 	data = data[:31]
-	assertInvalidBytes20(t, data[:31], "rangeSection expected a 16-bit vendorID to start at bit 243, but the consent string was only 31 bytes long")
+	assertInvalidBytes(t, data[:31], "rangeSection expected a 16-bit vendorID to start at bit 243, but the consent string was only 31 bytes long")
 }

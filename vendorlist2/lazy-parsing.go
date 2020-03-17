@@ -1,4 +1,4 @@
-package vendorlist
+package vendorlist2
 
 import (
 	"strconv"
@@ -30,16 +30,8 @@ func (l lazyVendorList) Version() uint16 {
 }
 
 func (l lazyVendorList) Vendor(vendorID uint16) api.Vendor {
-	var vendorBytes []byte
-	jsonparser.ArrayEach(l, func(value []byte, dataType jsonparser.ValueType, offset int, err error) {
-		if val, ok := lazyParseInt(value, "id"); ok {
-			if uint16(val) == vendorID {
-				vendorBytes = value
-			}
-		}
-	}, "vendors")
-
-	if len(vendorBytes) > 0 {
+	vendorBytes, _, _, err := jsonparser.Get(l, "vendors", strconv.Itoa(int(vendorID)))
+	if err == nil && len(vendorBytes) > 0 {
 		return lazyVendor(vendorBytes)
 	}
 	return nil
@@ -48,11 +40,19 @@ func (l lazyVendorList) Vendor(vendorID uint16) api.Vendor {
 type lazyVendor []byte
 
 func (l lazyVendor) Purpose(purposeID consentconstants.Purpose) bool {
-	return idExists(l, int(purposeID), "purposeIds")
+	exists := idExists(l, int(purposeID), "purposes")
+	if exists {
+		return true
+	}
+	return idExists(l, int(purposeID), "flexiblePurposes")
 }
 
 func (l lazyVendor) LegitimateInterest(purposeID consentconstants.Purpose) bool {
-	return idExists(l, int(purposeID), "legIntPurposeIds")
+	exists := idExists(l, int(purposeID), "legIntPurposes")
+	if exists {
+		return true
+	}
+	return idExists(l, int(purposeID), "flexiblePurposes")
 }
 
 // Returns false unless "id" exists in an array located at "data.key".

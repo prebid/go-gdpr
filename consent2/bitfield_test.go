@@ -1,4 +1,4 @@
-package vendorconsent
+package consent2
 
 import (
 	"testing"
@@ -6,10 +6,10 @@ import (
 	"github.com/prebid/go-gdpr/consentconstants"
 )
 
-func TestBitField20(t *testing.T) {
+func TestBitField(t *testing.T) {
 	// String built using http://gdpr-demo.labs.quantcast.com/user-examples/cookie-workshop.html
 	// This sample includes a BitField.
-	consent, err := Parse20(decode(t, "COwGVJOOwGVJOADACHENAOCAAO6as_-AAAhoAFNLAAoAAAA"))
+	consent, err := Parse(decode(t, "COwGVJOOwGVJOADACHENAOCAAO6as_-AAAhoAFNLAAoAAAA"))
 	assertNilError(t, err)
 	assertUInt8sEqual(t, 2, consent.Version())
 	assertUInt16sEqual(t, 3, consent.CmpID())

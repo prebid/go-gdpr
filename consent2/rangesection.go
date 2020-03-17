@@ -1,17 +1,17 @@
-package vendorconsent
+package consent2
 
 import (
 	"encoding/binary"
 	"fmt"
 )
 
-func parseRangeSection20(data consentMetadata20) (*rangeSection20, error) {
+func parseRangeSection(data consentMetadata) (*rangeSection, error) {
 
 	// This makes an int from bits 230-241
 	if len(data) < 31 {
 		return nil, fmt.Errorf("vendor consent strings using RangeSections require at least 31 bytes. Got %d", len(data))
 	}
-	numEntries := parseNumEntries20(data)
+	numEntries := parseNumEntries(data)
 
 	// Parse out the "exceptions" here.
 	currentOffset := uint(242)
@@ -25,14 +25,14 @@ func parseRangeSection20(data consentMetadata20) (*rangeSection20, error) {
 		currentOffset = currentOffset + bitsConsumed
 	}
 
-	return &rangeSection20{
-		consentMetadata20: data,
-		consents:          consents,
+	return &rangeSection{
+		consentMetadata: data,
+		consents:        consents,
 	}, nil
 }
 
 // parse the value of NumEntries, assuming this consent string uses a RangeEntry
-func parseNumEntries20(data []byte) uint16 {
+func parseNumEntries(data []byte) uint16 {
 	// This should isolate the bits [000000xx, xxxxxxxx, xx000000] to get bits 230-241 as an int
 	leftByte := ((data[28] & 0x03) << 2) | (data[29] >> 6)
 	rightByte := (data[29] << 2) | (data[30] >> 6)
@@ -44,7 +44,7 @@ func parseNumEntries20(data []byte) uint16 {
 
 // parseRangeConsents parses a RangeSection starting from the initial bit.
 // It returns the exception, as well as the number of bits consumed by the parsing.
-func parseRangeConsent(data consentMetadata20, initialBit uint) (rangeConsent, uint, error) {
+func parseRangeConsent(data consentMetadata, initialBit uint) (rangeConsent, uint, error) {
 	// Fixes #10
 	if uint(len(data)) <= initialBit/8 {
 		return nil, 0, fmt.Errorf("bit %d was supposed to start a new RangeEntry, but the consent string was only %d bytes long", initialBit, len(data))
@@ -85,14 +85,41 @@ func parseRangeConsent(data consentMetadata20, initialBit uint) (rangeConsent, u
 	return singleVendorConsent(vendorID), 17, nil
 }
 
+// parseUInt16  parses a 16-bit integer from the data array, starting at the given index
+func parseUInt16(data []byte, bitStartIndex uint) (uint16, error) {
+	startByte := bitStartIndex / 8
+	bitStartOffset := bitStartIndex % 8
+	if bitStartOffset == 0 {
+		if uint(len(data)) < (startByte + 2) {
+			return 0, fmt.Errorf("rangeSection expected a 16-bit vendorID to start at bit %d, but the consent string was only %d bytes long", bitStartIndex, len(data))
+		}
+		return binary.BigEndian.Uint16(data[startByte : startByte+2]), nil
+	}
+	if uint(len(data)) < (startByte + 3) {
+		return 0, fmt.Errorf("rangeSection expected a 16-bit vendorID to start at bit %d, but the consent string was only %d bytes long", bitStartIndex, len(data))
+	}
+
+	shiftComplement := 8 - bitStartOffset
+
+	// Take the rightmost bits of the left byte, and the leftmost bits of the middle byte
+	leftByte := (data[startByte] & (0xff >> bitStartOffset)) << bitStartOffset
+	leftByte = leftByte | (data[startByte+1] >> shiftComplement)
+
+	// Take the rightmost bits of the middle byte, and the leftmost bits of the right byte
+	rightByte := data[startByte+2] & (0xff << shiftComplement)
+	rightByte = (rightByte >> shiftComplement) | (data[startByte+1] << bitStartOffset)
+
+	return binary.BigEndian.Uint16([]byte{leftByte, rightByte}), nil
+}
+
 // A RangeConsents encodes consents that have been registered.
-type rangeSection20 struct {
-	consentMetadata20
+type rangeSection struct {
+	consentMetadata
 	consents []rangeConsent
 }
 
 // VendorConsents implementation
-func (p rangeSection20) VendorConsent(id uint16) bool {
+func (p rangeSection) VendorConsent(id uint16) bool {
 	if id < 1 || id > p.MaxVendorID() {
 		return false
 	}

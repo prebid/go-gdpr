@@ -1,4 +1,4 @@
-package vendorlist
+package vendorlist2
 
 import (
 	"testing"

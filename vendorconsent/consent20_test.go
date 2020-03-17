@@ -3,6 +3,8 @@ package vendorconsent
 import (
 	"encoding/base64"
 	"testing"
+
+	"github.com/prebid/go-gdpr/consent2"
 )
 
 // This checks error conditions to verify that we get errors back on malformed strings
@@ -75,7 +77,7 @@ func assertInvalid20(t *testing.T, urlEncodedString string, expectError string) 
 
 func assertInvalidBytes20(t *testing.T, data []byte, expectError string) {
 	t.Helper()
-	if consent, err := Parse20(data); err == nil {
+	if consent, err := consent2.Parse(data); err == nil {
 		t.Errorf("base64 URL-encoded string %s was considered valid, but shouldn't be. MaxVendorID: %d. len(data): %d", base64.RawURLEncoding.EncodeToString(data), consent.MaxVendorID(), len(data))
 	} else if err.Error() != expectError {
 		t.Errorf(`error messages did not match. Expected "%s", got "%s": %v`, expectError, err.Error(), err)

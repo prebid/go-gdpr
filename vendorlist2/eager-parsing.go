@@ -1,9 +1,10 @@
-package vendorlist
+package vendorlist2
 
 import (
 	"encoding/json"
 	"errors"
 
+	"github.com/prebid/go-gdpr/api"
 	"github.com/prebid/go-gdpr/consentconstants"
 )
 
@@ -15,8 +16,8 @@ import (
 //   2. You need strong input validation and good error messages.
 //
 // Otherwise, you may get better performance with ParseLazily.
-func ParseEagerly20(data []byte) (VendorList, error) {
-	var contract vendorListContract20
+func ParseEagerly(data []byte) (api.VendorList, error) {
+	var contract vendorListContract
 	if err := json.Unmarshal(data, &contract); err != nil {
 		return nil, err
 	}
@@ -28,20 +29,20 @@ func ParseEagerly20(data []byte) (VendorList, error) {
 		return nil, errors.New("data.vendors was undefined or had no elements")
 	}
 
-	parsedList := parsedVendorList20{
+	parsedList := parsedVendorList{
 		version: contract.Version,
-		vendors: make(map[uint16]parsedVendor20, len(contract.Vendors)),
+		vendors: make(map[uint16]parsedVendor, len(contract.Vendors)),
 	}
 
 	for _, v := range contract.Vendors {
-		parsedList.vendors[v.ID] = parseVendor20(v)
+		parsedList.vendors[v.ID] = parseVendor(v)
 	}
 
 	return parsedList, nil
 }
 
-func parseVendor20(contract vendorListVendorContract20) parsedVendor20 {
-	parsed := parsedVendor20{
+func parseVendor(contract vendorListVendorContract) parsedVendor {
+	parsed := parsedVendor{
 		purposes:            mapify(contract.Purposes),
 		legitimateInterests: mapify(contract.LegitimateInterests),
 		flexiblePurposes:    mapify(contract.FlexiblePurposes),
@@ -50,16 +51,25 @@ func parseVendor20(contract vendorListVendorContract20) parsedVendor20 {
 	return parsed
 }
 
-type parsedVendorList20 struct {
-	version uint16
-	vendors map[uint16]parsedVendor20
+func mapify(input []uint8) map[consentconstants.Purpose]struct{} {
+	m := make(map[consentconstants.Purpose]struct{}, len(input))
+	var s struct{}
+	for _, value := range input {
+		m[consentconstants.Purpose(value)] = s
+	}
+	return m
 }
 
-func (l parsedVendorList20) Version() uint16 {
+type parsedVendorList struct {
+	version uint16
+	vendors map[uint16]parsedVendor
+}
+
+func (l parsedVendorList) Version() uint16 {
 	return l.version
 }
 
-func (l parsedVendorList20) Vendor(vendorID uint16) Vendor {
+func (l parsedVendorList) Vendor(vendorID uint16) api.Vendor {
 	vendor, ok := l.vendors[vendorID]
 	if ok {
 		return vendor
@@ -67,13 +77,13 @@ func (l parsedVendorList20) Vendor(vendorID uint16) Vendor {
 	return nil
 }
 
-type parsedVendor20 struct {
+type parsedVendor struct {
 	purposes            map[consentconstants.Purpose]struct{}
 	legitimateInterests map[consentconstants.Purpose]struct{}
 	flexiblePurposes    map[consentconstants.Purpose]struct{}
 }
 
-func (l parsedVendor20) Purpose(purposeID consentconstants.Purpose) (hasPurpose bool) {
+func (l parsedVendor) Purpose(purposeID consentconstants.Purpose) (hasPurpose bool) {
 	_, hasPurpose = l.purposes[purposeID]
 	if !hasPurpose {
 		_, hasPurpose = l.flexiblePurposes[purposeID]
@@ -85,7 +95,7 @@ func (l parsedVendor20) Purpose(purposeID consentconstants.Purpose) (hasPurpose 
 // use data for the given purpose.
 //
 // For an explanation of legitimate interest, see https://www.gdpreu.org/the-regulation/key-concepts/legitimate-interest/
-func (l parsedVendor20) LegitimateInterest(purposeID consentconstants.Purpose) (hasLegitimateInterest bool) {
+func (l parsedVendor) LegitimateInterest(purposeID consentconstants.Purpose) (hasLegitimateInterest bool) {
 	_, hasLegitimateInterest = l.legitimateInterests[purposeID]
 	if !hasLegitimateInterest {
 		_, hasLegitimateInterest = l.flexiblePurposes[purposeID]
@@ -93,12 +103,12 @@ func (l parsedVendor20) LegitimateInterest(purposeID consentconstants.Purpose) (
 	return
 }
 
-type vendorListContract20 struct {
-	Version uint16                                `json:"vendorListVersion"`
-	Vendors map[string]vendorListVendorContract20 `json:"vendors"`
+type vendorListContract struct {
+	Version uint16                              `json:"vendorListVersion"`
+	Vendors map[string]vendorListVendorContract `json:"vendors"`
 }
 
-type vendorListVendorContract20 struct {
+type vendorListVendorContract struct {
 	ID                  uint16  `json:"id"`
 	Purposes            []uint8 `json:"purposes"`
 	LegitimateInterests []uint8 `json:"legIntPurposes"`

@@ -1,4 +1,4 @@
-package vendorlist
+package api
 
 import "github.com/prebid/go-gdpr/consentconstants"
 
