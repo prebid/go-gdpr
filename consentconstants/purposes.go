@@ -3,9 +3,9 @@ package consentconstants
 // Purpose is one of the IAB GDPR purposes. These appear in:
 //   1. `root.purposes[i]` of the vendor list: https://vendorlist.consensu.org/vendorlist.json
 //   2. PurposesAllowed of the Consent string: https://github.com/InteractiveAdvertisingBureau/GDPR-Transparency-and-Consent-Framework/blob/master/Consent%20string%20and%20vendor%20list%20formats%20v1.1%20Final.md#vendor-consent-string-format-
-// NOTE: These only apply to TCF 1.0, and not TCF 2.0
 type Purpose uint8
 
+// TCF 1 Purposes:
 const (
 	// InfoStorageAccess includes the storage of information, or access to information that is already stored,
 	// on your device such as advertising identifiers, device identifiers, cookies, and similar technologies.
@@ -41,7 +41,7 @@ const (
 	Measurement Purpose = 5
 )
 
-// TCF 2.0 Purposes
+// TCF 2.0 Purposes:
 const (
 	// Cookies, device identifiers, or other information can be stored or accessed on your device for the purposes presented to you.
 	// Vendors can:

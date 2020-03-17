@@ -40,7 +40,6 @@ func (c consentMetadata20) Version() uint8 {
 }
 
 func (c consentMetadata20) Created() time.Time {
-	_ = c[5]
 	// Stored in bits 6-41.. which is [000000xx xxxxxxxx xxxxxxxx xxxxxxxx xxxxxxxx xx000000] starting at the 1st byte
 	deciseconds := int64(binary.BigEndian.Uint64([]byte{
 		0x0,
