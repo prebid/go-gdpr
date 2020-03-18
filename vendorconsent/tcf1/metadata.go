@@ -1,4 +1,4 @@
-package consent2
+package vendorconsent
 
 import (
 	"encoding/binary"
@@ -12,8 +12,8 @@ import (
 // Parse the metadata from the consent string.
 // This returns an error if the input is too short to answer questions about that data.
 func parseMetadata(data []byte) (consentMetadata, error) {
-	if len(data) < 30 {
-		return nil, fmt.Errorf("vendor consent strings are at least 30 bytes long. This one was %d", len(data))
+	if len(data) < 22 {
+		return nil, fmt.Errorf("vendor consent strings are at least 22 bytes long. This one was %d", len(data))
 	}
 	metadata := consentMetadata(data)
 	if metadata.MaxVendorID() < 1 {
@@ -45,6 +45,7 @@ const (
 )
 
 func (c consentMetadata) Created() time.Time {
+	_ = c[5]
 	// Stored in bits 6-41.. which is [000000xx xxxxxxxx xxxxxxxx xxxxxxxx xxxxxxxx xx000000] starting at the 1st byte
 	deciseconds := int64(binary.BigEndian.Uint64([]byte{
 		0x0,
@@ -109,16 +110,16 @@ func (c consentMetadata) VendorListVersion() uint16 {
 }
 
 func (c consentMetadata) MaxVendorID() uint16 {
-	// The max vendor ID is stored in bits 213 - 228 [00000xxx xxxxxxxx xxxxx000]
-	leftByte := byte((c[26]&0x07)<<5 + (c[27]&0xf8)>>3)
-	rightByte := byte((c[27]&0x07)<<5 + (c[28]&0xf8)>>3)
+	// The max vendor ID is stored in bits 156 - 171
+	leftByte := byte((c[19]&0x0f)<<4 + (c[20]&0xf0)>>4)
+	rightByte := byte((c[20]&0x0f)<<4 + (c[21]&0xf0)>>4)
 	return binary.BigEndian.Uint16([]byte{leftByte, rightByte})
 }
 
 func (c consentMetadata) PurposeAllowed(id consentconstants.Purpose) bool {
-	// Purposes are stored in bits 152 - 175. The interface contract only defines behavior for ints in the range [1, 24]...
+	// Purposes are stored in bits 132 - 155. The interface contract only defines behavior for ints in the range [1, 24]...
 	// so in the valid range, this won't even overflow a uint8.
-	return isSet(c, uint(id)+151)
+	return isSet(c, uint(id)+131)
 }
 
 // Returns true if the bitIndex'th bit in data is a 1, and false if it's a 0.

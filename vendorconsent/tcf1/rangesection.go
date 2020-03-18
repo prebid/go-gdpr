@@ -1,4 +1,4 @@
-package consent2
+package vendorconsent
 
 import (
 	"encoding/binary"
@@ -6,45 +6,47 @@ import (
 )
 
 func parseRangeSection(data consentMetadata) (*rangeSection, error) {
+	defaultValue := isSet(data, 173)
 
-	// This makes an int from bits 230-241
-	if len(data) < 31 {
-		return nil, fmt.Errorf("vendor consent strings using RangeSections require at least 31 bytes. Got %d", len(data))
+	// This makes an int from bits 174-185
+	if len(data) < 24 {
+		return nil, fmt.Errorf("vendor consent strings using RangeSections require at least 24 bytes. Got %d", len(data))
 	}
 	numEntries := parseNumEntries(data)
 
 	// Parse out the "exceptions" here.
-	currentOffset := uint(242)
-	consents := make([]rangeConsent, numEntries)
+	currentOffset := uint(186)
+	exceptions := make([]rangeException, numEntries)
 	for i := uint16(0); i < numEntries; i++ {
-		thisConsent, bitsConsumed, err := parseRangeConsent(data, currentOffset)
+		thisException, bitsConsumed, err := parseException(data, currentOffset)
 		if err != nil {
 			return nil, err
 		}
-		consents[i] = thisConsent
+		exceptions[i] = thisException
 		currentOffset = currentOffset + bitsConsumed
 	}
 
 	return &rangeSection{
 		consentMetadata: data,
-		consents:        consents,
+		defaultValue:    defaultValue,
+		exceptions:      exceptions,
 	}, nil
 }
 
 // parse the value of NumEntries, assuming this consent string uses a RangeEntry
 func parseNumEntries(data []byte) uint16 {
-	// This should isolate the bits [000000xx, xxxxxxxx, xx000000] to get bits 230-241 as an int
-	leftByte := ((data[28] & 0x03) << 2) | (data[29] >> 6)
-	rightByte := (data[29] << 2) | (data[30] >> 6)
+	// This should isolate the bits [000000xx, xxxxxxxx, xx000000] to get bits 174-185 as an int
+	leftByte := ((data[21] & 0x03) << 2) | (data[22] >> 6)
+	rightByte := (data[22] << 2) | (data[23] >> 6)
 
 	return binary.BigEndian.Uint16([]byte{leftByte, rightByte})
 }
 
 // RangeSection Exception implemnetations
 
-// parseRangeConsents parses a RangeSection starting from the initial bit.
+// parseException parses a RangeSection exception starting from the initial bit.
 // It returns the exception, as well as the number of bits consumed by the parsing.
-func parseRangeConsent(data consentMetadata, initialBit uint) (rangeConsent, uint, error) {
+func parseException(data consentMetadata, initialBit uint) (rangeException, uint, error) {
 	// Fixes #10
 	if uint(len(data)) <= initialBit/8 {
 		return nil, 0, fmt.Errorf("bit %d was supposed to start a new RangeEntry, but the consent string was only %d bytes long", initialBit, len(data))
@@ -68,7 +70,7 @@ func parseRangeConsent(data consentMetadata, initialBit uint) (rangeConsent, uin
 		if end <= start {
 			return nil, 0, fmt.Errorf("bit %d range entry excludes vendors [%d, %d]. The start should be less than the end", initialBit, start, end)
 		}
-		return rangeVendorConsent{
+		return rangeVendorException{
 			startID: start,
 			endID:   end,
 		}, uint(33), nil
@@ -82,7 +84,7 @@ func parseRangeConsent(data consentMetadata, initialBit uint) (rangeConsent, uin
 		return nil, 0, fmt.Errorf("bit %d range entry excludes vendor %d, but only vendors [1, %d] are valid", initialBit, vendorID, data.MaxVendorID())
 	}
 
-	return singleVendorConsent(vendorID), 17, nil
+	return singleVendorException(vendorID), 17, nil
 }
 
 // parseUInt16  parses a 16-bit integer from the data array, starting at the given index
@@ -112,10 +114,11 @@ func parseUInt16(data []byte, bitStartIndex uint) (uint16, error) {
 	return binary.BigEndian.Uint16([]byte{leftByte, rightByte}), nil
 }
 
-// A RangeConsents encodes consents that have been registered.
+// A RangeSection has a default "consent" value, and then encodes exceptions to that rule.
 type rangeSection struct {
 	consentMetadata
-	consents []rangeConsent
+	defaultValue bool
+	exceptions   []rangeException
 }
 
 // VendorConsents implementation
@@ -124,33 +127,33 @@ func (p rangeSection) VendorConsent(id uint16) bool {
 		return false
 	}
 
-	for i := 0; i < len(p.consents); i++ {
-		if p.consents[i].Contains(id) {
-			return true
+	for i := 0; i < len(p.exceptions); i++ {
+		if p.exceptions[i].Contains(id) {
+			return !p.defaultValue
 		}
 	}
-	return false
+	return p.defaultValue
 }
 
 // A RangeSection has a default consent value and a list of "exceptions". This represents an "exception" blob
-type rangeConsent interface {
+type rangeException interface {
 	Contains(id uint16) bool
 }
 
 // This is a RangeSection exception for a single vendor.
-type singleVendorConsent uint16
+type singleVendorException uint16
 
-func (e singleVendorConsent) Contains(id uint16) bool {
+func (e singleVendorException) Contains(id uint16) bool {
 	return uint16(e) == id
 }
 
 // This is a RangeSection exception for a range of IDs.
 // The start and end bounds here are inclusive.
-type rangeVendorConsent struct {
+type rangeVendorException struct {
 	startID uint16
 	endID   uint16
 }
 
-func (e rangeVendorConsent) Contains(id uint16) bool {
+func (e rangeVendorException) Contains(id uint16) bool {
 	return e.startID <= id && e.endID >= id
 }

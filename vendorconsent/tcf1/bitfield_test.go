@@ -1,4 +1,4 @@
-package consent1
+package vendorconsent
 
 import (
 	"testing"

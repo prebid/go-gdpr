@@ -1,4 +1,4 @@
-package consent2
+package vendorconsent
 
 import (
 	"encoding/base64"
