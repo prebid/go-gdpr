@@ -4,6 +4,10 @@ import base "github.com/prebid/go-gdpr/consentconstants"
 
 // TCF 2.0 Purposes:
 const (
+	// InfoStorageAccess includes the storage of information, or access to information that is already stored,
+	// on your device such as advertising identifiers, device identifiers, cookies, and similar technologies.
+	InfoStorageAccess base.Purpose = 1
+
 	// Cookies, device identifiers, or other information can be stored or accessed on your device for the purposes presented to you.
 	// Vendors can:
 	//   * Store and access information on the device such as cookies and device identifiers presented to a user.
