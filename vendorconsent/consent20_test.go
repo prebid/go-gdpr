@@ -4,7 +4,7 @@ import (
 	"encoding/base64"
 	"testing"
 
-	"github.com/prebid/go-gdpr/consent2"
+	tcf2 "github.com/prebid/go-gdpr/vendorconsent/tcf2"
 )
 
 // This checks error conditions to verify that we get errors back on malformed strings
@@ -42,7 +42,7 @@ func TestInvalidConsentStrings20(t *testing.T) {
 	//
 	// These "bad requests" can be made by tweaking those values to get various errors.
 	// Bad metadata
-	assertInvalid20(t, "CONciguONcjGKADACHENAOCIAC0ta__AACiQABg", "vendor consent strings are at least 30 bytes long. This one was 29")
+	assertInvalid20(t, "CONciguONcjGKADACHENAOCIAC0ta__AACiQAA", "vendor consent strings are at least 29 bytes long. This one was 28")
 	assertInvalid20(t, "AONciguONcjGKADACHENAOCIAC0ta__AACiQABgAAYA", "the consent string encoded a Version of 0, but this value must be greater than or equal to 1")
 	assertInvalid20(t, "CONciguONcjGKADACHENAOCIAC0ta__AACiQAAAAAMA", "the consent string encoded a MaxVendorID of 0, but this value must be greater than or equal to 1")
 	assertInvalid20(t, "CONciguONcjGKADACHENAACIAC0ta__AACiQABgAAYA", "the consent string encoded a VendorListVersion of 0, but this value must be greater than or equal to 1")
@@ -77,7 +77,7 @@ func assertInvalid20(t *testing.T, urlEncodedString string, expectError string) 
 
 func assertInvalidBytes20(t *testing.T, data []byte, expectError string) {
 	t.Helper()
-	if consent, err := consent2.Parse(data); err == nil {
+	if consent, err := tcf2.Parse(data); err == nil {
 		t.Errorf("base64 URL-encoded string %s was considered valid, but shouldn't be. MaxVendorID: %d. len(data): %d", base64.RawURLEncoding.EncodeToString(data), consent.MaxVendorID(), len(data))
 	} else if err.Error() != expectError {
 		t.Errorf(`error messages did not match. Expected "%s", got "%s": %v`, expectError, err.Error(), err)
