@@ -43,7 +43,7 @@ func TestInvalidConsentStrings20(t *testing.T) {
 	// These "bad requests" can be made by tweaking those values to get various errors.
 	// Bad metadata
 	assertInvalid20(t, "CONciguONcjGKADACHENAOCIAC0ta__AACiQAA", "vendor consent strings are at least 29 bytes long. This one was 28")
-	assertInvalid20(t, "AONciguONcjGKADACHENAOCIAC0ta__AACiQABgAAYA", "the consent string encoded a Version of 0, but this value must be greater than or equal to 1")
+	assertInvalid20(t, "BONciguONcjGKADACHENAOCIAC0ta__AACiQABgAAYA", "the consent string encoded a Version of 1, but this value must be greater than or equal to 2")
 	assertInvalid20(t, "CONciguONcjGKADACHENAACIAC0ta__AACiQABgAAYA", "the consent string encoded a VendorListVersion of 0, but this value must be greater than or equal to 1")
 
 	// Bad BitFields
