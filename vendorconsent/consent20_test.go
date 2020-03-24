@@ -75,6 +75,21 @@ func TestParseValidString20MaxVendorID0(t *testing.T) {
 	assertUInt16sEqual(t, 15, parsed.VendorListVersion())
 }
 
+func TestParseEmptyString(t *testing.T) {
+	// checks there is no panic due to array out of bound
+	var err error
+
+	_, err = ParseString("")
+	if err == nil {
+		t.Errorf("expected an error from ParseString")
+	}
+
+	_, err = ParseVersion(make([]byte, 0))
+	if err == nil {
+		t.Errorf("expected an error from ParseVersion")
+	}
+}
+
 func assertInvalid20(t *testing.T, urlEncodedString string, expectError string) {
 	t.Helper()
 	data, err := base64.RawURLEncoding.DecodeString(urlEncodedString)

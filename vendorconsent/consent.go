@@ -2,6 +2,7 @@ package vendorconsent
 
 import (
 	"encoding/base64"
+	"fmt"
 	"strings"
 
 	"github.com/prebid/go-gdpr/api"
@@ -16,11 +17,23 @@ func ParseString(consent string) (api.VendorConsents, error) {
 	if err != nil {
 		return nil, err
 	}
-	version := uint8(decoded[0] >> 2)
+	version, err := ParseVersion(decoded)
+	if err != nil {
+		return nil, err
+	}
 	if version == 2 {
 		return tcf2.Parse(decoded)
 	}
 	return tcf1.Parse(decoded)
+}
+
+// ParseVersion parses version from base64-decoded consent string
+func ParseVersion(decodedConsent []byte) (uint8, error) {
+	if len(decodedConsent) == 0 {
+		return 0, fmt.Errorf("decoded consent cannot be empty")
+	}
+	// read version from first 6 bits
+	return decodedConsent[0] >> 2, nil
 }
 
 // Backwards compatibility
