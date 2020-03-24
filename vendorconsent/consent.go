@@ -12,8 +12,9 @@ import (
 
 // ParseString parses a Raw (unpadded) base64 URL encoded string.
 func ParseString(consent string) (api.VendorConsents, error) {
-	pieces := strings.Split(consent, ".")
-	decoded, err := base64.RawURLEncoding.DecodeString(pieces[0])
+	// split TCF 2.0 segments
+	segments := strings.SplitN(consent, ".", 4) // specify max substrings to limit memory usage if there are a lot of occurrences of '.'
+	decoded, err := base64.RawURLEncoding.DecodeString(segments[0])
 	if err != nil {
 		return nil, err
 	}
