@@ -5,6 +5,7 @@ package consentconstants
 //   2. PurposesAllowed of the Consent string: https://github.com/InteractiveAdvertisingBureau/GDPR-Transparency-and-Consent-Framework/blob/master/Consent%20string%20and%20vendor%20list%20formats%20v1.1%20Final.md#vendor-consent-string-format-
 type Purpose uint8
 
+// TCF 1 Purposes:
 const (
 	// InfoStorageAccess includes the storage of information, or access to information that is already stored,
 	// on your device such as advertising identifiers, device identifiers, cookies, and similar technologies.

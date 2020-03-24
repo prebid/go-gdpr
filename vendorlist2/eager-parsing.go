@@ -1,4 +1,4 @@
-package vendorlist
+package vendorlist2
 
 import (
 	"encoding/json"
@@ -34,9 +34,8 @@ func ParseEagerly(data []byte) (api.VendorList, error) {
 		vendors: make(map[uint16]parsedVendor, len(contract.Vendors)),
 	}
 
-	for i := 0; i < len(contract.Vendors); i++ {
-		thisVendor := contract.Vendors[i]
-		parsedList.vendors[thisVendor.ID] = parseVendor(thisVendor)
+	for _, v := range contract.Vendors {
+		parsedList.vendors[v.ID] = parseVendor(v)
 	}
 
 	return parsedList, nil
@@ -44,8 +43,9 @@ func ParseEagerly(data []byte) (api.VendorList, error) {
 
 func parseVendor(contract vendorListVendorContract) parsedVendor {
 	parsed := parsedVendor{
-		purposeIDs:            mapify(contract.PurposeIDs),
-		legitimateInterestIDs: mapify(contract.LegitimateInterestIDs),
+		purposes:            mapify(contract.Purposes),
+		legitimateInterests: mapify(contract.LegitimateInterests),
+		flexiblePurposes:    mapify(contract.FlexiblePurposes),
 	}
 
 	return parsed
@@ -78,12 +78,16 @@ func (l parsedVendorList) Vendor(vendorID uint16) api.Vendor {
 }
 
 type parsedVendor struct {
-	purposeIDs            map[consentconstants.Purpose]struct{}
-	legitimateInterestIDs map[consentconstants.Purpose]struct{}
+	purposes            map[consentconstants.Purpose]struct{}
+	legitimateInterests map[consentconstants.Purpose]struct{}
+	flexiblePurposes    map[consentconstants.Purpose]struct{}
 }
 
 func (l parsedVendor) Purpose(purposeID consentconstants.Purpose) (hasPurpose bool) {
-	_, hasPurpose = l.purposeIDs[purposeID]
+	_, hasPurpose = l.purposes[purposeID]
+	if !hasPurpose {
+		_, hasPurpose = l.flexiblePurposes[purposeID]
+	}
 	return
 }
 
@@ -92,17 +96,21 @@ func (l parsedVendor) Purpose(purposeID consentconstants.Purpose) (hasPurpose bo
 //
 // For an explanation of legitimate interest, see https://www.gdpreu.org/the-regulation/key-concepts/legitimate-interest/
 func (l parsedVendor) LegitimateInterest(purposeID consentconstants.Purpose) (hasLegitimateInterest bool) {
-	_, hasLegitimateInterest = l.legitimateInterestIDs[purposeID]
+	_, hasLegitimateInterest = l.legitimateInterests[purposeID]
+	if !hasLegitimateInterest {
+		_, hasLegitimateInterest = l.flexiblePurposes[purposeID]
+	}
 	return
 }
 
 type vendorListContract struct {
-	Version uint16                     `json:"vendorListVersion"`
-	Vendors []vendorListVendorContract `json:"vendors"`
+	Version uint16                              `json:"vendorListVersion"`
+	Vendors map[string]vendorListVendorContract `json:"vendors"`
 }
 
 type vendorListVendorContract struct {
-	ID                    uint16  `json:"id"`
-	PurposeIDs            []uint8 `json:"purposeIds"`
-	LegitimateInterestIDs []uint8 `json:"legIntPurposeIds"`
+	ID                  uint16  `json:"id"`
+	Purposes            []uint8 `json:"purposes"`
+	LegitimateInterests []uint8 `json:"legIntPurposes"`
+	FlexiblePurposes    []uint8 `json:"flexiblePurposes"`
 }

@@ -3,6 +3,8 @@ package vendorconsent
 import (
 	"encoding/base64"
 	"testing"
+
+	tcf1 "github.com/prebid/go-gdpr/vendorconsent/tcf1"
 )
 
 func TestIsSet(t *testing.T) {
@@ -91,7 +93,7 @@ func assertInvalid(t *testing.T, urlEncodedString string, expectError string) {
 
 func assertInvalidBytes(t *testing.T, data []byte, expectError string) {
 	t.Helper()
-	if consent, err := Parse(data); err == nil {
+	if consent, err := tcf1.Parse(data); err == nil {
 		t.Errorf("base64 URL-encoded string %s was considered valid, but shouldn't be. MaxVendorID: %d. len(data): %d", base64.RawURLEncoding.EncodeToString(data), consent.MaxVendorID(), len(data))
 	} else if err.Error() != expectError {
 		t.Errorf(`error messages did not match. Expected "%s", got "%s": %v`, expectError, err.Error(), err)
@@ -146,4 +148,25 @@ func buildMap(keys ...uint) map[uint]struct{} {
 		m[key] = s
 	}
 	return m
+}
+
+func assertNilError(t *testing.T, err error) {
+	if err != nil {
+		t.Fatalf("Unexpected error: %v", err)
+	}
+}
+
+// Returns true if the bitIndex'th bit in data is a 1, and false if it's a 0.
+func isSet(data []byte, bitIndex uint) bool {
+	byteIndex := bitIndex / 8
+	bitOffset := bitIndex % 8
+	return byteToBool(data[byteIndex] & (0x80 >> bitOffset))
+}
+
+// byteToBool returns false if val is 0, and true otherwise
+func byteToBool(val byte) bool {
+	if val == 0 {
+		return false
+	}
+	return true
 }

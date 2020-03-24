@@ -2,14 +2,16 @@ package vendorlist
 
 import (
 	"testing"
+
+	"github.com/prebid/go-gdpr/api"
 )
 
-func AssertVendorlistCorrectness(t *testing.T, parser func(data []byte) VendorList) {
+func AssertVendorlistCorrectness(t *testing.T, parser func(data []byte) api.VendorList) {
 	t.Run("TestVendorList", vendorListTester(parser))
 	t.Run("TestVendor", vendorTester(parser))
 }
 
-func vendorListTester(parser func(data []byte) VendorList) func(*testing.T) {
+func vendorListTester(parser func(data []byte) api.VendorList) func(*testing.T) {
 	return func(t *testing.T) {
 		list := parser([]byte(testData))
 		assertIntsEqual(t, 5, int(list.Version()))
@@ -18,7 +20,7 @@ func vendorListTester(parser func(data []byte) VendorList) func(*testing.T) {
 	}
 }
 
-func vendorTester(parser func(data []byte) VendorList) func(*testing.T) {
+func vendorTester(parser func(data []byte) api.VendorList) func(*testing.T) {
 	return func(t *testing.T) {
 		list := parser([]byte(testData))
 		v := list.Vendor(32)
@@ -68,7 +70,7 @@ func assertBoolsEqual(t *testing.T, expected bool, actual bool) {
 	}
 }
 
-func assertNil(t *testing.T, value Vendor, expectNil bool) {
+func assertNil(t *testing.T, value api.Vendor, expectNil bool) {
 	t.Helper()
 	if expectNil && value != nil {
 		t.Error("The vendor should be nil, but wasn't.")

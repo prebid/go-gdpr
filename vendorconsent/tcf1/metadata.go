@@ -121,3 +121,10 @@ func (c consentMetadata) PurposeAllowed(id consentconstants.Purpose) bool {
 	// so in the valid range, this won't even overflow a uint8.
 	return isSet(c, uint(id)+131)
 }
+
+// Returns true if the bitIndex'th bit in data is a 1, and false if it's a 0.
+func isSet(data []byte, bitIndex uint) bool {
+	byteIndex := bitIndex / 8
+	bitOffset := bitIndex % 8
+	return byteToBool(data[byteIndex] & (0x80 >> bitOffset))
+}

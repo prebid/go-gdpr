@@ -64,9 +64,3 @@ func TestLanguageExtremes(t *testing.T) {
 	assertNilError(t, err)
 	assertStringsEqual(t, "ZA", consent.ConsentLanguage())
 }
-
-func assertNilError(t *testing.T, err error) {
-	if err != nil {
-		t.Fatalf("Unexpected error: %v", err)
-	}
-}

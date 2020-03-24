@@ -1,6 +1,8 @@
 package vendorconsent
 
-import "fmt"
+import (
+	"fmt"
+)
 
 func parseBitField(data consentMetadata) (*consentBitField, error) {
 	vendorBitsRequired := data.MaxVendorID()
@@ -51,8 +53,5 @@ func (f *consentBitField) VendorConsent(id uint16) bool {
 
 // byteToBool returns false if val is 0, and true otherwise
 func byteToBool(val byte) bool {
-	if val == 0 {
-		return false
-	}
-	return true
+	return val != 0
 }
