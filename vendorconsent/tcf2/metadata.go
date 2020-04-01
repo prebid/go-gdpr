@@ -9,27 +9,24 @@ import (
 	"github.com/prebid/go-gdpr/consentconstants"
 )
 
-// Parse the metadata from the consent string.
+// parseMetadata parses the metadata from the consent string.
 // This returns an error if the input is too short to answer questions about that data.
 func parseMetadata(data []byte) (consentMetadata, error) {
 	if len(data) < 29 {
 		return nil, fmt.Errorf("vendor consent strings are at least 29 bytes long. This one was %d", len(data))
 	}
 	metadata := consentMetadata(data)
-	if metadata.MaxVendorID() < 1 {
-		return nil, fmt.Errorf("the consent string encoded a MaxVendorID of %d, but this value must be greater than or equal to 1", metadata.MaxVendorID())
-	}
-	if metadata.Version() < 1 {
-		return nil, fmt.Errorf("the consent string encoded a Version of %d, but this value must be greater than or equal to 1", metadata.Version())
+	if metadata.Version() < 2 {
+		return nil, fmt.Errorf("the consent string encoded a Version of %d, but this value must be greater than or equal to 2", metadata.Version())
 	}
 	if metadata.VendorListVersion() == 0 {
 		return nil, errors.New("the consent string encoded a VendorListVersion of 0, but this value must be greater than or equal to 1")
 
 	}
-	return consentMetadata(data), nil
+	return data, nil
 }
 
-// consemtMetadata implements the parts of the VendorConsents interface which are common
+// consentMetadata implements the parts of the VendorConsents interface which are common
 // to BitFields and RangeSections. This relies on Parse to have done some validation already,
 // to make sure that functions on it don't overflow the bounds of the byte array.
 type consentMetadata []byte
@@ -110,8 +107,8 @@ func (c consentMetadata) VendorListVersion() uint16 {
 
 func (c consentMetadata) MaxVendorID() uint16 {
 	// The max vendor ID is stored in bits 213 - 228 [00000xxx xxxxxxxx xxxxx000]
-	leftByte := byte((c[26]&0x07)<<5 + (c[27]&0xf8)>>3)
-	rightByte := byte((c[27]&0x07)<<5 + (c[28]&0xf8)>>3)
+	leftByte := ((c[26] & 0x07) << 5) | ((c[27] & 0xf8) >> 3)
+	rightByte := ((c[27] & 0x07) << 5) | ((c[28] & 0xf8) >> 3)
 	return binary.BigEndian.Uint16([]byte{leftByte, rightByte})
 }
 

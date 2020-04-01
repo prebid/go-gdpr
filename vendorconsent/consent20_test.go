@@ -12,7 +12,7 @@ func TestInvalidConsentStrings20(t *testing.T) {
 	// All strings here were encoded using https://cryptii.com/binary-to-base64 from binary to URL-encoded base64 string.
 	// Beware: this tool only makes sense if your binary strings use full bytes (multiples of 8 digits).
 	//
-	// For future tests, a "basline" of valid binary using a BitField, segmented by different vendor consent string semantics, is:
+	// For future tests, a "baseline" of valid binary using a BitField, segmented by different vendor consent string semantics, is:
 	//
 	// 000010                                 => Version
 	// 001110001101011100100010100000101110   => Created date
@@ -20,15 +20,15 @@ func TestInvalidConsentStrings20(t *testing.T) {
 	// 000000000011                           => CmpId
 	// 000000000010                           => CmpVersion
 	// 000111                                 => ConsentScreen
-	// 000100001101                           => ConsentLangugae
+	// 000100001101                           => ConsentLanguage
 	// 000000001110                           => VendorListVersion
 	// 000010								  => TcfPolicyVersion
 	// 0 									  => IsServiceSpecific
 	// 0									  => UseNonStandardStacks
-	// 100000000000							  => SpecialFeatureOptins
+	// 100000000000							  => SpecialFeatureOptIns
 	// 001011010010110101101011               => PurposesConsent
 	// 111111111100000000000000				  => PurposesLITransparency
-	// 0									  => PurposeOneTreatement
+	// 0									  => PurposeOneTreatment
 	// 010100010010							  => PublisherCC (US if I did tge math right)
 	// 0000000000000011                       => MaxVendorID <= Vendor Consent
 	// 0                                      => EncodingType
@@ -43,8 +43,7 @@ func TestInvalidConsentStrings20(t *testing.T) {
 	// These "bad requests" can be made by tweaking those values to get various errors.
 	// Bad metadata
 	assertInvalid20(t, "CONciguONcjGKADACHENAOCIAC0ta__AACiQAA", "vendor consent strings are at least 29 bytes long. This one was 28")
-	assertInvalid20(t, "AONciguONcjGKADACHENAOCIAC0ta__AACiQABgAAYA", "the consent string encoded a Version of 0, but this value must be greater than or equal to 1")
-	assertInvalid20(t, "CONciguONcjGKADACHENAOCIAC0ta__AACiQAAAAAMA", "the consent string encoded a MaxVendorID of 0, but this value must be greater than or equal to 1")
+	assertInvalid20(t, "BONciguONcjGKADACHENAOCIAC0ta__AACiQABgAAYA", "the consent string encoded a Version of 1, but this value must be greater than or equal to 2")
 	assertInvalid20(t, "CONciguONcjGKADACHENAACIAC0ta__AACiQABgAAYA", "the consent string encoded a VendorListVersion of 0, but this value must be greater than or equal to 1")
 
 	// Bad BitFields
@@ -66,6 +65,29 @@ func TestParseValidString20(t *testing.T) {
 	parsed, err := ParseString("CONciguONcjGKADACHENAOCIAC0ta__AACiQABgAAYA")
 	assertNilError(t, err)
 	assertUInt16sEqual(t, 14, parsed.VendorListVersion())
+}
+
+func TestParseValidString20MaxVendorID0(t *testing.T) {
+	parsed, err := ParseString("COwJz-rOwJz-rMLAEAFRAPCgAAAAAAAAAAqIAAAAAAAA")
+	assertNilError(t, err)
+	// if vendor consent is empty, max vendor ID may be 0. See https://github.com/InteractiveAdvertisingBureau/iabtcf-es/issues/121
+	assertUInt16sEqual(t, 0, parsed.MaxVendorID())
+	assertUInt16sEqual(t, 15, parsed.VendorListVersion())
+}
+
+func TestParseEmptyString(t *testing.T) {
+	// checks there is no panic due to array out of bound
+	var err error
+
+	_, err = ParseString("")
+	if err == nil {
+		t.Errorf("expected an error from ParseString")
+	}
+
+	_, err = ParseVersion(make([]byte, 0))
+	if err == nil {
+		t.Errorf("expected an error from ParseVersion")
+	}
 }
 
 func assertInvalid20(t *testing.T, urlEncodedString string, expectError string) {
