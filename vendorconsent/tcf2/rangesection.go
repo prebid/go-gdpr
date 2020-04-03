@@ -5,30 +5,32 @@ import (
 	"fmt"
 )
 
-func parseRangeSection(data consentMetadata) (*rangeSection, error) {
-
+func parseRangeSection(metadata consentMetadata) (*rangeSection, uint, error) {
+	data := metadata.data
 	// This makes an int from bits 230-241
 	if len(data) < 31 {
-		return nil, fmt.Errorf("vendor consent strings using RangeSections require at least 31 bytes. Got %d", len(data))
+		return nil, 0, fmt.Errorf("vendor consent strings using RangeSections require at least 31 bytes. Got %d", len(data))
 	}
 	numEntries := parseNumEntries(data)
+	maxVendorID := metadata.MaxVendorID()
 
 	// Parse out the "exceptions" here.
 	currentOffset := uint(242)
 	consents := make([]rangeConsent, numEntries)
 	for i := uint16(0); i < numEntries; i++ {
-		thisConsent, bitsConsumed, err := parseRangeConsent(data, currentOffset)
+		thisConsent, bitsConsumed, err := parseRangeConsent(data, currentOffset, maxVendorID)
 		if err != nil {
-			return nil, err
+			return nil, 0, err
 		}
 		consents[i] = thisConsent
 		currentOffset = currentOffset + bitsConsumed
 	}
 
 	return &rangeSection{
-		consentMetadata: data,
-		consents:        consents,
-	}, nil
+		consentData: data,
+		consents:    consents,
+		maxVendorID: maxVendorID,
+	}, currentOffset, nil
 }
 
 // parse the value of NumEntries, assuming this consent string uses a RangeEntry
@@ -44,7 +46,7 @@ func parseNumEntries(data []byte) uint16 {
 
 // parseRangeConsents parses a RangeSection starting from the initial bit.
 // It returns the exception, as well as the number of bits consumed by the parsing.
-func parseRangeConsent(data consentMetadata, initialBit uint) (rangeConsent, uint, error) {
+func parseRangeConsent(data []byte, initialBit uint, maxVendorID uint16) (rangeConsent, uint, error) {
 	// Fixes #10
 	if uint(len(data)) <= initialBit/8 {
 		return nil, 0, fmt.Errorf("bit %d was supposed to start a new RangeEntry, but the consent string was only %d bytes long", initialBit, len(data))
@@ -62,8 +64,8 @@ func parseRangeConsent(data consentMetadata, initialBit uint) (rangeConsent, uin
 		if start == 0 {
 			return nil, 0, fmt.Errorf("bit %d range entry exclusion starts at 0, but the min vendor ID is 1", initialBit)
 		}
-		if end > data.MaxVendorID() {
-			return nil, 0, fmt.Errorf("bit %d range entry exclusion ends at %d, but the max vendor ID is %d", initialBit, end, data.MaxVendorID())
+		if end > maxVendorID {
+			return nil, 0, fmt.Errorf("bit %d range entry exclusion ends at %d, but the max vendor ID is %d", initialBit, end, maxVendorID)
 		}
 		if end <= start {
 			return nil, 0, fmt.Errorf("bit %d range entry excludes vendors [%d, %d]. The start should be less than the end", initialBit, start, end)
@@ -78,8 +80,8 @@ func parseRangeConsent(data consentMetadata, initialBit uint) (rangeConsent, uin
 	if err != nil {
 		return nil, 0, err
 	}
-	if vendorID == 0 || vendorID > data.MaxVendorID() {
-		return nil, 0, fmt.Errorf("bit %d range entry excludes vendor %d, but only vendors [1, %d] are valid", initialBit, vendorID, data.MaxVendorID())
+	if vendorID == 0 || vendorID > maxVendorID {
+		return nil, 0, fmt.Errorf("bit %d range entry excludes vendor %d, but only vendors [1, %d] are valid", initialBit, vendorID, maxVendorID)
 	}
 
 	return singleVendorConsent(vendorID), 17, nil
@@ -114,13 +116,14 @@ func parseUInt16(data []byte, bitStartIndex uint) (uint16, error) {
 
 // A RangeConsents encodes consents that have been registered.
 type rangeSection struct {
-	consentMetadata
-	consents []rangeConsent
+	consentData []byte
+	consents    []rangeConsent
+	maxVendorID uint16
 }
 
 // VendorConsents implementation
 func (p rangeSection) VendorConsent(id uint16) bool {
-	if id < 1 || id > p.MaxVendorID() {
+	if id < 1 || id > p.maxVendorID {
 		return false
 	}
 

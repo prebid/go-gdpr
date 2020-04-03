@@ -10,10 +10,21 @@ func Parse(data []byte) (api.VendorConsents, error) {
 		return nil, err
 	}
 
+	var vendorConsents vendorConsentsResolver
+	var legIntStart uint
 	// Bit 229 determines whether or not the consent string encodes Vendor data in a RangeSection or BitField.
 	if isSet(data, 229) {
-		return parseRangeSection(metadata)
+		vendorConsents, legIntStart, err = parseRangeSection(metadata)
+	} else {
+		vendorConsents, legIntStart, err = parseBitField(metadata)
 	}
 
-	return parseBitField(metadata)
+	metadata.vendorConsents = vendorConsents
+	metadata.vendorLegitimateInterestStart = legIntStart
+
+	if err != nil {
+		return nil, err
+	}
+	return metadata, err
+
 }
