@@ -3,16 +3,22 @@ package vendorconsent
 import (
 	"encoding/binary"
 	"fmt"
+
+	"github.com/prebid/go-gdpr/bitutils"
 )
 
-func parseRangeSection(metadata consentMetadata) (*rangeSection, uint, error) {
+func parseRangeSection(metadata consentMetadata, maxVendorID uint16, startbit uint) (*rangeSection, uint, error) {
 	data := metadata.data
 	// This makes an int from bits 230-241
 	if len(data) < 31 {
 		return nil, 0, fmt.Errorf("vendor consent strings using RangeSections require at least 31 bytes. Got %d", len(data))
 	}
-	numEntries := parseNumEntries(data)
-	maxVendorID := metadata.MaxVendorID()
+	numEntries, err := bitutils.ParseUInt12(data, 230)
+	fmt.Printf("numEntries: %d\n", numEntries)
+	fmt.Printf("Old func: %d\n", parseNumEntries(data))
+	if err != nil {
+		return nil, 0, err
+	}
 
 	// Parse out the "exceptions" here.
 	currentOffset := uint(242)
@@ -53,11 +59,11 @@ func parseRangeConsent(data []byte, initialBit uint, maxVendorID uint16) (rangeC
 	}
 	// If the first bit is set, it's a Range of IDs
 	if isSet(data, initialBit) {
-		start, err := parseUInt16(data, initialBit+1)
+		start, err := bitutils.ParseUInt16(data, initialBit+1)
 		if err != nil {
 			return nil, 0, err
 		}
-		end, err := parseUInt16(data, initialBit+17)
+		end, err := bitutils.ParseUInt16(data, initialBit+17)
 		if err != nil {
 			return nil, 0, err
 		}
@@ -76,7 +82,7 @@ func parseRangeConsent(data []byte, initialBit uint, maxVendorID uint16) (rangeC
 		}, uint(33), nil
 	}
 
-	vendorID, err := parseUInt16(data, initialBit+1)
+	vendorID, err := bitutils.ParseUInt16(data, initialBit+1)
 	if err != nil {
 		return nil, 0, err
 	}
@@ -85,33 +91,6 @@ func parseRangeConsent(data []byte, initialBit uint, maxVendorID uint16) (rangeC
 	}
 
 	return singleVendorConsent(vendorID), 17, nil
-}
-
-// parseUInt16  parses a 16-bit integer from the data array, starting at the given index
-func parseUInt16(data []byte, bitStartIndex uint) (uint16, error) {
-	startByte := bitStartIndex / 8
-	bitStartOffset := bitStartIndex % 8
-	if bitStartOffset == 0 {
-		if uint(len(data)) < (startByte + 2) {
-			return 0, fmt.Errorf("rangeSection expected a 16-bit vendorID to start at bit %d, but the consent string was only %d bytes long", bitStartIndex, len(data))
-		}
-		return binary.BigEndian.Uint16(data[startByte : startByte+2]), nil
-	}
-	if uint(len(data)) < (startByte + 3) {
-		return 0, fmt.Errorf("rangeSection expected a 16-bit vendorID to start at bit %d, but the consent string was only %d bytes long", bitStartIndex, len(data))
-	}
-
-	shiftComplement := 8 - bitStartOffset
-
-	// Take the rightmost bits of the left byte, and the leftmost bits of the middle byte
-	leftByte := (data[startByte] & (0xff >> bitStartOffset)) << bitStartOffset
-	leftByte = leftByte | (data[startByte+1] >> shiftComplement)
-
-	// Take the rightmost bits of the middle byte, and the leftmost bits of the right byte
-	rightByte := data[startByte+2] & (0xff << shiftComplement)
-	rightByte = (rightByte >> shiftComplement) | (data[startByte+1] << bitStartOffset)
-
-	return binary.BigEndian.Uint16([]byte{leftByte, rightByte}), nil
 }
 
 // A RangeConsents encodes consents that have been registered.

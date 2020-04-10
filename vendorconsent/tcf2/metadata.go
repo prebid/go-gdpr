@@ -38,15 +38,11 @@ type consentMetadata struct {
 	vendorLegitimateInterestStart uint
 	pubRestrictionsStart          uint
 	vendorConsents                vendorConsentsResolver
-	vendorLegitimateInterests     vendorLegitimateInterestResolver
+	vendorLegitimateInterests     vendorConsentsResolver
 }
 
 type vendorConsentsResolver interface {
 	VendorConsent(id uint16) bool
-}
-
-type vendorLegitimateInterestResolver interface {
-	VendorLegitimateInterest(id uint16) bool
 }
 
 func (c consentMetadata) Version() uint8 {
@@ -141,6 +137,10 @@ func (c consentMetadata) PurposeAllowed(id consentconstants.Purpose) bool {
 
 func (c consentMetadata) VendorConsent(id uint16) bool {
 	return c.vendorConsents.VendorConsent(id)
+}
+
+func (c consentMetadata) VendorLegitInterest(id uint16) bool {
+	return c.vendorLegitimateInterests.VendorConsent(id)
 }
 
 // Returns true if the bitIndex'th bit in data is a 1, and false if it's a 0.

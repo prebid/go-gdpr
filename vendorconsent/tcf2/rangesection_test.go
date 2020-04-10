@@ -35,5 +35,5 @@ func TestRangeSectionConsent(t *testing.T) {
 func TestInvalidRangeEdgeCase(t *testing.T) {
 	data := decode(t, "COwDzqZOwDzqZN4ABMENAPCAAP4AAP-AAAhoAFQAYABgAOABQAAAAA")
 	data = data[:31]
-	assertInvalidBytes(t, data[:31], "rangeSection expected a 16-bit vendorID to start at bit 243, but the consent string was only 31 bytes long")
+	assertInvalidBytes(t, data[:31], "ParseUInt16 expected a 16-bit int to start at bit 243, but the consent string was only 31 bytes long")
 }
