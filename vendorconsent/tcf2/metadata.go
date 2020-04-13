@@ -135,6 +135,17 @@ func (c consentMetadata) PurposeAllowed(id consentconstants.Purpose) bool {
 	return isSet(c.data, uint(id)+151)
 }
 
+func (c consentMetadata) PurposeOneTreatment() bool {
+	return isSet(c.data, 200)
+}
+
+func (c consentMetadata) SpecialFeatureOptIn(id uint16) bool {
+	if id > 12 {
+		return false
+	}
+	return isSet(c.data, 140+uint(id))
+}
+
 func (c consentMetadata) VendorConsent(id uint16) bool {
 	return c.vendorConsents.VendorConsent(id)
 }
