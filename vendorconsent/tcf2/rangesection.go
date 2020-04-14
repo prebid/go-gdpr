@@ -7,7 +7,7 @@ import (
 	"github.com/prebid/go-gdpr/bitutils"
 )
 
-func parseRangeSection(metadata consentMetadata, maxVendorID uint16, startbit uint) (*rangeSection, uint, error) {
+func parseRangeSection(metadata ConsentMetadata, maxVendorID uint16, startbit uint) (*rangeSection, uint, error) {
 	data := metadata.data
 	// This makes an int from bits 230-241
 	if len(data) < 31 {

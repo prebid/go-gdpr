@@ -58,3 +58,13 @@ func TestLanguageExtremes(t *testing.T) {
 	assertNilError(t, err)
 	assertStringsEqual(t, "SV", consent.ConsentLanguage())
 }
+
+func TestTCF2Fields(t *testing.T) {
+	baseConsent, err := Parse(decode(t, "COx3XOeOx3XOeLkAAAENAfCIAAAAAHgAAIAAAAAAAAAA"))
+	assertNilError(t, err)
+	consent := baseConsent.(ConsentMetadata)
+
+	assertBoolsEqual(t, true, consent.PurposeOneTreatment())
+	assertBoolsEqual(t, true, consent.SpecialFeatureOptIn(1))
+	assertBoolsEqual(t, false, consent.SpecialFeatureOptIn(2))
+}

@@ -4,7 +4,7 @@ import (
 	"fmt"
 )
 
-func parseBitField(metadata consentMetadata, vendorBitsRequired uint16, startbit uint) (*consentBitField, uint, error) {
+func parseBitField(metadata ConsentMetadata, vendorBitsRequired uint16, startbit uint) (*consentBitField, uint, error) {
 	data := metadata.data
 
 	bytesRequired := (uint(vendorBitsRequired) + startbit) / 8

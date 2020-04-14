@@ -29,13 +29,13 @@ func Parse(data []byte) (api.VendorConsents, error) {
 	}
 
 	metadata.vendorConsents = vendorConsents
-	metadata.vendorLegitimateInterestStart = legIntStart + 13
-	legIntMaxVend, err := bitutils.ParseUInt12(data, legIntStart)
+	metadata.vendorLegitimateInterestStart = legIntStart + 17
+	legIntMaxVend, err := bitutils.ParseUInt16(data, legIntStart)
 	if err != nil {
 		return nil, err
 	}
 
-	if isSet(data, legIntStart+12) {
+	if isSet(data, legIntStart+16) {
 		vendorLegitInts, pubRestrictsStart, err = parseRangeSection(metadata, legIntMaxVend, metadata.vendorLegitimateInterestStart)
 	} else {
 		vendorLegitInts, pubRestrictsStart, err = parseBitField(metadata, legIntMaxVend, metadata.vendorLegitimateInterestStart)
@@ -46,6 +46,13 @@ func Parse(data []byte) (api.VendorConsents, error) {
 
 	metadata.vendorLegitimateInterests = vendorLegitInts
 	metadata.pubRestrictionsStart = pubRestrictsStart
+
+	pubRestrictions, _, err := parsePubRestriction(metadata, pubRestrictsStart)
+	if err != nil {
+		return nil, err
+	}
+
+	metadata.publisherRestrictions = pubRestrictions
 
 	return metadata, err
 

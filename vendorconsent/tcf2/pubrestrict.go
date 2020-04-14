@@ -6,7 +6,10 @@ import (
 	"github.com/prebid/go-gdpr/bitutils"
 )
 
-func parsePubRestriction(metadata consentMetadata, startbit uint) (*pubRestrictions, uint, error) {
+// IAB spec does not specify a max vendorID for the publisher restrictions. This should be one bit short of the max possible.
+const assumedMaxVendorID uint16 = 32767
+
+func parsePubRestriction(metadata ConsentMetadata, startbit uint) (*pubRestrictions, uint, error) {
 	data := metadata.data
 	numRestrictions, err := bitutils.ParseUInt12(data, startbit)
 	if err != nil {
@@ -29,7 +32,7 @@ func parsePubRestriction(metadata consentMetadata, startbit uint) (*pubRestricti
 		currentOffset = currentOffset + 12
 		vendors := make([]rangeConsent, numEntries)
 		for i := uint16(0); i < numEntries; i++ {
-			thisConsent, bitsConsumed, err := parseRangeConsent(data, currentOffset, metadata.MaxVendorID())
+			thisConsent, bitsConsumed, err := parseRangeConsent(data, currentOffset, assumedMaxVendorID)
 			if err != nil {
 				return nil, 0, err
 			}
