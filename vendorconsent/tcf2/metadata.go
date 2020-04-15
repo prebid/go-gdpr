@@ -148,7 +148,7 @@ func (c ConsentMetadata) SpecialFeatureOptIn(id uint16) bool {
 	if id > 12 {
 		return false
 	}
-	return isSet(c.data, 140+uint(id))
+	return isSet(c.data, 140+uint(id)-1)
 }
 
 func (c ConsentMetadata) VendorConsent(id uint16) bool {
