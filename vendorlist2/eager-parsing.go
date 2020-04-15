@@ -91,6 +91,12 @@ func (l parsedVendor) Purpose(purposeID consentconstants.Purpose) (hasPurpose bo
 	return
 }
 
+// PurposeStrict checks only for the primary purpose, no considering flex purposes.
+func (l parsedVendor) PurposeStrict(purposeID consentconstants.Purpose) (hasPurpose bool) {
+	_, hasPurpose = l.purposes[purposeID]
+	return
+}
+
 // LegitimateInterest retursn true if this vendor claims a "Legitimate Interest" to
 // use data for the given purpose.
 //
@@ -100,6 +106,12 @@ func (l parsedVendor) LegitimateInterest(purposeID consentconstants.Purpose) (ha
 	if !hasLegitimateInterest {
 		_, hasLegitimateInterest = l.flexiblePurposes[purposeID]
 	}
+	return
+}
+
+// LegitimateInterestStrict checks only for the primary legitimate, no considering flex purposes.
+func (l parsedVendor) LegitimateInterestStrict(purposeID consentconstants.Purpose) (hasLegitimateInterest bool) {
+	_, hasLegitimateInterest = l.legitimateInterests[purposeID]
 	return
 }
 
