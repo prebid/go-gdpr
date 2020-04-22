@@ -41,27 +41,63 @@ func TestParseByte4(t *testing.T) {
 	}
 }
 
+// Used https://cryptii.com/ to convert 8 bit sequeces to integers
+var test8Bits = []testDefinition{
+	{testdata, 4, 0x4a},
+	{testdata, 7, 81},
+	{testdata, 26, 196},
+	{testdata, 6, 40},
+}
+
 func TestParseByte8(t *testing.T) {
-	b, err := ParseByte8(testdata, 4)
-	assertNilError(t, err)
-	assertBytesEqual(t, 0x4a, b)
+	b, err := ParseByte8([]byte{0x44, 0x76}, 11)
+	assertStringsEqual(t, "ParseByte8 expected 8 bitst to start at bit 11, but the consent string was only 2 bytes long", err.Error())
+
+	for _, test := range test8Bits {
+		b, err = ParseByte8(test.data, test.offset)
+		assertNilError(t, err)
+		assertBytesEqual(t, byte(test.value), b)
+	}
+}
+
+var test12Bits = []testDefinition{
+	{testdata, 10, 2176},
+	{testdata, 16, 59},
+	{testdata, 19, 472},
+	{testdata, 1, 148},
+	{testdata, 22, 3780},
+	{testdata, 4, 1186},
 }
 
 func TestParseUInt12(t *testing.T) {
-	i, err := ParseUInt12(testdata, 10)
-	assertNilError(t, err)
-	assertUInt16sEqual(t, 2176, i)
-	i, err = ParseUInt12(testdata, 16)
-	assertNilError(t, err)
-	assertUInt16sEqual(t, 59, i)
-	i, err = ParseUInt12(testdata, 19)
-	assertNilError(t, err)
-	assertUInt16sEqual(t, 472, i)
-	i, err = ParseUInt12(testdata, 1)
-	assertNilError(t, err)
-	assertUInt16sEqual(t, 148, i)
-	i, err = ParseUInt12(testdata, 44)
+	i, err := ParseUInt12(testdata, 44)
 	assertStringsEqual(t, "ParseUInt12 expected a 12-bit int to start at bit 44, but the consent string was only 6 bytes long", err.Error())
+
+	for _, test := range test12Bits {
+		i, err = ParseUInt12(test.data, test.offset)
+		assertNilError(t, err)
+		assertUInt16sEqual(t, uint16(test.value), i)
+	}
+}
+
+var test16Bits = []testDefinition{
+	{testdata, 10, 34830},
+	{testdata, 16, 945},
+	{testdata, 19, 7560},
+	{testdata, 1, 2372},
+	{testdata, 22, 60480},
+	{testdata, 4, 18976},
+}
+
+func TestParseUInt16(t *testing.T) {
+	i, err := ParseUInt16(testdata, 44)
+	assertStringsEqual(t, "ParseUInt16 expected a 16-bit int to start at bit 44, but the consent string was only 6 bytes long", err.Error())
+
+	for _, test := range test16Bits {
+		i, err = ParseUInt16(test.data, test.offset)
+		assertNilError(t, err)
+		assertUInt16sEqual(t, uint16(test.value), i)
+	}
 }
 
 func assertNilError(t *testing.T, err error) {
