@@ -17,14 +17,14 @@ type testDefinition struct {
 }
 
 var test4Bits = []testDefinition{
-	{testdata, 21, 7},
-	{testdata, 12, 2},
-	{testdata, 44, 11},
-	{testdata, 6, 2},
-	{[]byte{0x10}, 0, 1},
-	{[]byte{0x92}, 4, 2},
-	{[]byte{0x99}, 1, 3},
-	{[]byte{0x01, 0xe0}, 7, 15},
+	{testdata, 21, 7},           // testdata duplicate of Offset which involves flowing over to a second byte
+	{testdata, 12, 2},           // testdata duplicate of Offset which aligns with a nibble and doesn't span over multiple bytes
+	{testdata, 44, 11},          // testdata duplicate of Offset which aligns with a nibble and doesn't span over multiple bytes
+	{testdata, 6, 2},            // testdata duplicate of Offset which involves flowing over to a second byte
+	{[]byte{0x10}, 0, 1},        // No offset
+	{[]byte{0x92}, 4, 2},        // Offset which aligns with a nibble and doesn't span over multiple bytes
+	{[]byte{0x99}, 1, 3},        // Offset which doesn't align with a nibble.
+	{[]byte{0x01, 0xe0}, 7, 15}, // Offset which involves flowing over to a second byte
 }
 
 func TestParseByte4(t *testing.T) {
@@ -43,15 +43,19 @@ func TestParseByte4(t *testing.T) {
 
 // Used https://cryptii.com/ to convert 8 bit sequeces to integers
 var test8Bits = []testDefinition{
-	{testdata, 4, 0x4a},
-	{testdata, 7, 81},
-	{testdata, 26, 196},
-	{testdata, 6, 40},
+	{testdata, 4, 0x4a}, // Offset that alligns to a nibble
+	{testdata, 7, 81},   // Odd Offset
+	{testdata, 26, 196}, // Even offset that does not align to a nibble
+	{testdata, 6, 40},   // Second even offset that does not align to a nibble
+	{testdata, 8, 162},  // Zero offset
 }
 
 func TestParseByte8(t *testing.T) {
 	b, err := ParseByte8([]byte{0x44, 0x76}, 11)
 	assertStringsEqual(t, "ParseByte8 expected 8 bitst to start at bit 11, but the consent string was only 2 bytes long", err.Error())
+
+	b, err = ParseByte8([]byte{0x44, 0x76}, 18)
+	assertStringsEqual(t, "ParseByte8 expected 8 bitst to start at bit 18, but the consent string was only 2 bytes long", err.Error())
 
 	for _, test := range test8Bits {
 		b, err = ParseByte8(test.data, test.offset)
@@ -61,17 +65,20 @@ func TestParseByte8(t *testing.T) {
 }
 
 var test12Bits = []testDefinition{
-	{testdata, 10, 2176},
-	{testdata, 16, 59},
-	{testdata, 19, 472},
-	{testdata, 1, 148},
-	{testdata, 22, 3780},
-	{testdata, 4, 1186},
+	{testdata, 10, 2176}, // Even Offset that does not align to a nibble, but fits 2 bytes
+	{testdata, 16, 59},   // Zero Offset
+	{testdata, 19, 472},  // Odd Offset that overflows to 3rd byte
+	{testdata, 1, 148},   // Odd offset that fits 2 bytes
+	{testdata, 22, 3780}, // Another even unaligned offset that overflows to 3rd byte
+	{testdata, 4, 1186},  // Offset that aligns to a nibble (these can never overflow)
 }
 
 func TestParseUInt12(t *testing.T) {
 	i, err := ParseUInt12(testdata, 44)
 	assertStringsEqual(t, "ParseUInt12 expected a 12-bit int to start at bit 44, but the consent string was only 6 bytes long", err.Error())
+
+	i, err = ParseUInt12(testdata, 40)
+	assertStringsEqual(t, "ParseUInt12 expected a 12-bit int to start at bit 40, but the consent string was only 6 bytes long", err.Error())
 
 	for _, test := range test12Bits {
 		i, err = ParseUInt12(test.data, test.offset)
@@ -81,17 +88,20 @@ func TestParseUInt12(t *testing.T) {
 }
 
 var test16Bits = []testDefinition{
-	{testdata, 10, 34830},
-	{testdata, 16, 945},
-	{testdata, 19, 7560},
-	{testdata, 1, 2372},
-	{testdata, 22, 60480},
-	{testdata, 4, 18976},
+	{testdata, 10, 34830}, // Even offset that does not align to a nibble
+	{testdata, 16, 945},   // Zero offset
+	{testdata, 19, 7560},  // Odd offset
+	{testdata, 1, 2372},   // Odd offset
+	{testdata, 22, 60480}, // Second even offset that does not align to a nibble
+	{testdata, 4, 18976},  // Nibble aligned offset
 }
 
 func TestParseUInt16(t *testing.T) {
 	i, err := ParseUInt16(testdata, 44)
 	assertStringsEqual(t, "ParseUInt16 expected a 16-bit int to start at bit 44, but the consent string was only 6 bytes long", err.Error())
+
+	i, err = ParseUInt16(testdata, 40)
+	assertStringsEqual(t, "ParseUInt16 expected a 16-bit int to start at bit 40, but the consent string was only 6 bytes long", err.Error())
 
 	for _, test := range test16Bits {
 		i, err = ParseUInt16(test.data, test.offset)
