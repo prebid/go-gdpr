@@ -19,10 +19,12 @@ func TestPubRestrictions(t *testing.T) {
 	assertBoolsEqual(t, true, consent.CheckPubRestriction(7, 1, 32))
 	assertBoolsEqual(t, false, consent.CheckPubRestriction(7, 1, 7))
 	assertBoolsEqual(t, false, consent.CheckPubRestriction(5, 1, 32))
+}
 
-	baseConsent, err = Parse(decode(t, "COxPe2TOxPe2TALABAENAPCgAAAAAAAAAAAAAFAAAAoAAA4IACACAIABgACAFA4ADACAAIygAGADwAQBIAIAIB0AEAEBSACACAA"))
+func TestPubRestrictions2(t *testing.T) {
+	baseConsent, err := Parse(decode(t, "COxPe2TOxPe2TALABAENAPCgAAAAAAAAAAAAAFAAAAoAAA4IACACAIABgACAFA4ADACAAIygAGADwAQBIAIAIB0AEAEBSACACAA"))
 	assertNilError(t, err)
-	consent = baseConsent.(ConsentMetadata)
+	consent := baseConsent.(ConsentMetadata)
 
 	assertBoolsEqual(t, false, consent.PurposeOneTreatment())
 	assertBoolsEqual(t, false, consent.SpecialFeatureOptIn(3))
