@@ -14,8 +14,6 @@ func parseRangeSection(metadata ConsentMetadata, maxVendorID uint16, startbit ui
 		return nil, 0, fmt.Errorf("vendor consent strings using RangeSections require at least 31 bytes. Got %d", len(data))
 	}
 	numEntries, err := bitutils.ParseUInt12(data, 230)
-	fmt.Printf("numEntries: %d\n", numEntries)
-	fmt.Printf("Old func: %d\n", parseNumEntries(data))
 	if err != nil {
 		return nil, 0, err
 	}
