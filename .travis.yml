@@ -10,5 +10,12 @@ script:
     - go test -timeout 30s github.com/prebid/go-gdpr/vendorconsent/tcf2
     - go test -timeout 30s github.com/prebid/go-gdpr/vendorlist
     - go test -timeout 30s github.com/prebid/go-gdpr/vendorlist2
-    - go vet -source vendorconsent
-    - go vet -source vendorlist
+    - go vet -source github.com/prebid/go-gdpr/api
+    - go vet -source github.com/prebid/go-gdpr/bitutils
+    - go vet -source github.com/prebid/go-gdpr/consentconstants
+    - go vet -source github.com/prebid/go-gdpr/consentconstants/tcf2
+    - go vet -source github.com/prebid/go-gdpr/vendorconsent
+    - go vet -source github.com/prebid/go-gdpr/vendorconsent/tcf1
+    - go vet -source github.com/prebid/go-gdpr/vendorconsent/tcf2
+    - go vet -source github.com/prebid/go-gdpr/vendorlist
+    - go vet -source github.com/prebid/go-gdpr/vendorlist2
