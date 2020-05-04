@@ -50,10 +50,10 @@ func TestInvalidConsentStrings20(t *testing.T) {
 	assertInvalid20(t, "CONciguONcjGKADACHENAOCIAC0ta__AACiQAeAA", "a BitField for 60 vendors requires a consent string of 36 bytes. This consent string had 30")
 
 	// Bad RangeSections
-	assertInvalid20(t, "CONciguONcjGKADACHENAOCIAC0ta__AACiQABwA", "vendor consent strings using RangeSections require at least 31 bytes. Got 30")                                   // This encodes 184 bits
-	assertInvalid20(t, "CONciguONcjGKADACHENAOCIAC0ta__AACiQABwAQQ", "rangeSection expected a 16-bit vendorID to start at bit 243, but the consent string was only 31 bytes long")   // 1 single vendor, too few bits
-	assertInvalid20(t, "CONciguONcjGKADACHENAOCIAC0ta__AACiQABwAYQAC", "rangeSection expected a 16-bit vendorID to start at bit 259, but the consent string was only 33 bytes long") // 1 vendor range, too few bits
-	assertInvalid20(t, "CONciguONcjGKADACHENAOCIAC0ta__AACiQABwAgABA", "rangeSection expected a 16-bit vendorID to start at bit 260, but the consent string was only 33 bytes long") // 2 single vendors, too few bits
+	assertInvalid20(t, "CONciguONcjGKADACHENAOCIAC0ta__AACiQABwA", "vendor consent strings using RangeSections require at least 31 bytes. Got 30")                             // This encodes 184 bits
+	assertInvalid20(t, "CONciguONcjGKADACHENAOCIAC0ta__AACiQABwAQQ", "ParseUInt16 expected a 16-bit int to start at bit 243, but the consent string was only 31 bytes long")   // 1 single vendor, too few bits
+	assertInvalid20(t, "CONciguONcjGKADACHENAOCIAC0ta__AACiQABwAYQAC", "ParseUInt16 expected a 16-bit int to start at bit 259, but the consent string was only 33 bytes long") // 1 vendor range, too few bits
+	assertInvalid20(t, "CONciguONcjGKADACHENAOCIAC0ta__AACiQABwAgABA", "ParseUInt16 expected a 16-bit int to start at bit 260, but the consent string was only 33 bytes long") // 2 single vendors, too few bits
 	assertInvalid20(t, "CONciguONcjGKADACHENAOCIAC0ta__AACiQABwAgAAAAA", "bit 242 range entry excludes vendor 0, but only vendors [1, 3] are valid")
 	assertInvalid20(t, "CONciguONcjGKADACHENAOCIAC0ta__AACiQABwAgACAAA", "bit 242 range entry excludes vendor 4, but only vendors [1, 3] are valid")
 	assertInvalid20(t, "CONciguONcjGKADACHENAOCIAC0ta__AACiQABwAgABAAAA", "bit 259 range entry excludes vendor 0, but only vendors [1, 3] are valid")
@@ -62,9 +62,9 @@ func TestInvalidConsentStrings20(t *testing.T) {
 }
 
 func TestParseValidString20(t *testing.T) {
-	parsed, err := ParseString("CONciguONcjGKADACHENAOCIAC0ta__AACiQABgAAYA")
+	parsed, err := ParseString("COyiILmOyiILmADACHENAPCAAAAAAAAAAAAAE5QBgALgAqgD8AQACSwEygJyAAAAAA")
 	assertNilError(t, err)
-	assertUInt16sEqual(t, 14, parsed.VendorListVersion())
+	assertUInt16sEqual(t, 15, parsed.VendorListVersion())
 }
 
 func TestParseValidString20MaxVendorID0(t *testing.T) {

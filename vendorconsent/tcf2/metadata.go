@@ -19,8 +19,9 @@ func parseMetadata(data []byte) (ConsentMetadata, error) {
 		data: data,
 	}
 	if metadata.Version() < 2 {
+		version := metadata.Version()
 		metadata.data = nil
-		return metadata, fmt.Errorf("the consent string encoded a Version of %d, but this value must be greater than or equal to 2", metadata.Version())
+		return metadata, fmt.Errorf("the consent string encoded a Version of %d, but this value must be greater than or equal to 2", version)
 	}
 	if metadata.VendorListVersion() == 0 {
 		metadata.data = nil
