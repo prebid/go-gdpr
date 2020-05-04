@@ -1,10 +1,13 @@
 language: go
 go:
-    - "1.9"
-    - "1.10"
+    - "1.12"
+    - "1.13"
 
 script:
+    - go test -timeout 30s github.com/prebid/go-gdpr/bitutils
     - go test -timeout 30s github.com/prebid/go-gdpr/vendorconsent
+    - go test -timeout 30s github.com/prebid/go-gdpr/vendorconsent/tcf*
     - go test -timeout 30s github.com/prebid/go-gdpr/vendorlist
+    - go test -timeout 30s github.com/prebid/go-gdpr/vendorlist2
     - go tool vet -source vendorconsent
     - go tool vet -source vendorlist
