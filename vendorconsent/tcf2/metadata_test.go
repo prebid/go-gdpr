@@ -32,29 +32,39 @@ func TestLastUpdate(t *testing.T) {
 }
 
 func TestLargeCmpID(t *testing.T) {
-	consent, err := Parse(decode(t, "COv_46cOv_46cFZFZTENAPCAAAAAAAAAAAAAE5QBwABAAXABVAH8AgAElgJkATkAYEAgAAQACAAGAAXABUAH8AQIAwAAAA"))
+	consent, err := Parse(decode(t, "COyiBqdOyiBqdObAAAENAfCIAP8AAH-AAAAAB4AXQQgEAAAgoAAAAABAIYQUAAAAAAAAAAAAAAAIQIQCxIvkgQMAAAABgAIAAAAAAAAAAABAZAkAAA"))
 	assertNilError(t, err)
-	assertUInt16sEqual(t, 345, consent.CmpID())
+	assertUInt16sEqual(t, 923, consent.CmpID())
 }
 
 func TestLargeCmpVersion(t *testing.T) {
-	consent, err := Parse(decode(t, "COv_46cOv_46cFZFZTENAPCAAAAAAAAAAAAAE5QBwABAAXABVAH8AgAElgJkATkAYEAgAAQACAAGAAXABUAH8AQIAwAAAA"))
+	consent, err := Parse(decode(t, "COyiCPlOyiCPlKxMIAENAfCAAAAAAAAAAAAAAAAAAAAA"))
 	assertNilError(t, err)
-	assertUInt16sEqual(t, 345, consent.CmpVersion())
+	assertUInt16sEqual(t, 776, consent.CmpVersion())
 }
 
 func TestLargeConsentScreen(t *testing.T) {
-	consent, err := Parse(decode(t, "COv_46cOv_46cFZFZTENAPCAAAAAAAAAAAAAE5QBwABAAXABVAH8AgAElgJkATkAYEAgAAQACAAGAAXABUAH8AQIAwAAAA"))
+	consent, err := Parse(decode(t, "COyiFYuOyiFYuDKAA4ENAfCAAAAAAAAAAAAAAAAAAAAA"))
 	assertNilError(t, err)
-	assertUInt8sEqual(t, 19, consent.ConsentScreen())
+	assertUInt8sEqual(t, 56, consent.ConsentScreen())
 }
 
 func TestLanguageExtremes(t *testing.T) {
-	consent, err := Parse(decode(t, "COv_46cOv_46cFZFZTBGAPCAAAAAAAAAAAAAE5QBwABAAXABVAH8AgAElgJkATkAYEAgAAQACAAGAAXABUAH8AQIAwAAAA"))
+	consent, err := Parse(decode(t, "COyiHgFOyiHgFN4ABABGAPCAAAAAAAAAAAAAAFAAAAoAAAA"))
 	assertNilError(t, err)
 	assertStringsEqual(t, "BG", consent.ConsentLanguage())
 
-	consent, err = Parse(decode(t, "COv_46cOv_46cFZFZTSVAPCAAAAAAAAAAAAAE5QBwABAAXABVAH8AgAElgJkATkAYEAgAAQACAAGAAXABUAH8AQIAwAAAA"))
+	consent, err = Parse(decode(t, "COyiHgFOyiHgFN4ABASVAPCAAAAAAAAAAAAAAFAAAAoAAAA"))
 	assertNilError(t, err)
 	assertStringsEqual(t, "SV", consent.ConsentLanguage())
+}
+
+func TestTCF2Fields(t *testing.T) {
+	baseConsent, err := Parse(decode(t, "COx3XOeOx3XOeLkAAAENAfCIAAAAAHgAAIAAAAAAAAAA"))
+	assertNilError(t, err)
+	consent := baseConsent.(ConsentMetadata)
+
+	assertBoolsEqual(t, true, consent.PurposeOneTreatment())
+	assertBoolsEqual(t, true, consent.SpecialFeatureOptIn(1))
+	assertBoolsEqual(t, false, consent.SpecialFeatureOptIn(2))
 }

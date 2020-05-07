@@ -51,7 +51,15 @@ func (l lazyVendor) Purpose(purposeID consentconstants.Purpose) bool {
 	return idExists(l, int(purposeID), "purposeIds")
 }
 
+func (l lazyVendor) PurposeStrict(purposeID consentconstants.Purpose) bool {
+	return idExists(l, int(purposeID), "purposeIds")
+}
+
 func (l lazyVendor) LegitimateInterest(purposeID consentconstants.Purpose) bool {
+	return idExists(l, int(purposeID), "legIntPurposeIds")
+}
+
+func (l lazyVendor) LegitimateInterestStrict(purposeID consentconstants.Purpose) bool {
 	return idExists(l, int(purposeID), "legIntPurposeIds")
 }
 

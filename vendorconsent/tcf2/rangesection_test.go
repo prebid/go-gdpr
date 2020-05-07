@@ -1,13 +1,14 @@
 package vendorconsent
 
 import (
+	"fmt"
 	"testing"
 )
 
 func TestRangeSectionConsent(t *testing.T) {
 	// String built using http://iabtcf.com/#/encode
 	// This sample encodes a mix of Single- and Range-typed consent exceptions.
-	consent, err := Parse(decode(t, "COv_46cOv_46cADACHENAPCAAAAAAAAAAAAAE5QBwABAAXABVAH8AgAElgJkATkAYEAgAAQACAAGAAXABUAH8AQIAwAAAA"))
+	consent, err := Parse(decode(t, "COyiILmOyiILmADACHENAPCAAAAAAAAAAAAAE5QBgALgAqgD8AQACSwEygJyAAAAAA"))
 	assertNilError(t, err)
 	assertUInt8sEqual(t, 2, consent.Version())
 	assertUInt16sEqual(t, 3, consent.CmpID())
@@ -24,9 +25,12 @@ func TestRangeSectionConsent(t *testing.T) {
 	// 		assertBoolsEqual(t, ok, consent.PurposeAllowed(consentconstants.Purpose(i)))
 	//	}
 
-	vendorsWithConsent := buildMap(2, 23, 42, 127, 128, 587, 612, 626)
+	vendorsWithConsent := buildMap(23, 42, 126, 127, 128, 587, 613, 626)
 	for i := uint16(1); i <= consent.MaxVendorID(); i++ {
 		_, ok := vendorsWithConsent[uint(i)]
+		if ok != consent.VendorConsent(i) {
+			fmt.Printf("Vendor: %d failed\n", i)
+		}
 		assertBoolsEqual(t, ok, consent.VendorConsent(i))
 	}
 }
@@ -35,5 +39,5 @@ func TestRangeSectionConsent(t *testing.T) {
 func TestInvalidRangeEdgeCase(t *testing.T) {
 	data := decode(t, "COwDzqZOwDzqZN4ABMENAPCAAP4AAP-AAAhoAFQAYABgAOABQAAAAA")
 	data = data[:31]
-	assertInvalidBytes(t, data[:31], "rangeSection expected a 16-bit vendorID to start at bit 243, but the consent string was only 31 bytes long")
+	assertInvalidBytes(t, data[:31], "ParseUInt16 expected a 16-bit int to start at bit 243, but the consent string was only 31 bytes long")
 }
