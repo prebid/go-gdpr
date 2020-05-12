@@ -81,5 +81,6 @@ func TestLITransparency(t *testing.T) {
 	assertBoolsEqual(t, true, consent.PurposeLITransparency(5))
 	assertBoolsEqual(t, false, consent.PurposeLITransparency(6))
 	assertBoolsEqual(t, false, consent.PurposeLITransparency(7))
+	assertBoolsEqual(t, false, consent.PurposeLITransparency(28))
 
 }
