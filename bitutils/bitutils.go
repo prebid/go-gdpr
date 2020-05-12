@@ -48,15 +48,16 @@ func ParseByte8(data []byte, bitStartIndex uint) (byte, error) {
 
 // ParseUInt12 parses 12 bits of data fromt the data array, starting at the given index
 func ParseUInt12(data []byte, bitStartIndex uint) (uint16, error) {
-	startByte := bitStartIndex / 8
-	bitStartOffset := bitStartIndex % 8
-	if bitStartOffset < 4 {
-		if uint(len(data)) < (startByte + 2) {
-			return 0, fmt.Errorf("ParseUInt12 expected a 12-bit int to start at bit %d, but the consent string was only %d bytes long", bitStartIndex, len(data))
-		}
+	end := bitStartIndex + 12
+	endByte := end / 8
+	endOffset := end % 8
+
+	if endOffset > 0 {
+		endByte++
 	}
-	if uint(len(data)) < (startByte+3) && bitStartOffset > 3 {
-		return 0, fmt.Errorf("ParseUInt12 expected a 12-bit int to start at bit %d, but the consent string was only %d bytes long", bitStartIndex, len(data))
+	if uint(len(data)) < endByte {
+		return 0, fmt.Errorf("ParseUInt12 expected a 12-bit int to start at bit %d, but the consent string was only %d bytes long",
+			bitStartIndex, len(data))
 	}
 
 	leftByte, err := ParseByte4(data, bitStartIndex)
