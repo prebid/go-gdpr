@@ -68,3 +68,19 @@ func TestTCF2Fields(t *testing.T) {
 	assertBoolsEqual(t, true, consent.SpecialFeatureOptIn(1))
 	assertBoolsEqual(t, false, consent.SpecialFeatureOptIn(2))
 }
+
+func TestLITransparency(t *testing.T) {
+	baseConsent, err := Parse(decode(t, "COx3XOeOx3XOeLkAAAENAfCIAAAAAHgAAIAAAAAAAAAA"))
+	assertNilError(t, err)
+	consent := baseConsent.(ConsentMetadata)
+
+	assertBoolsEqual(t, false, consent.PurposeLITransparency(1))
+	assertBoolsEqual(t, true, consent.PurposeLITransparency(2))
+	assertBoolsEqual(t, true, consent.PurposeLITransparency(3))
+	assertBoolsEqual(t, true, consent.PurposeLITransparency(4))
+	assertBoolsEqual(t, true, consent.PurposeLITransparency(5))
+	assertBoolsEqual(t, false, consent.PurposeLITransparency(6))
+	assertBoolsEqual(t, false, consent.PurposeLITransparency(7))
+	assertBoolsEqual(t, false, consent.PurposeLITransparency(28))
+
+}
