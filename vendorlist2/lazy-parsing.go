@@ -65,6 +65,11 @@ func (l lazyVendor) LegitimateInterestStrict(purposeID consentconstants.Purpose)
 	return idExists(l, int(purposeID), "legIntPurposes")
 }
 
+// SpecialPurpose returns true if this vendor claims a need for the given special purpose
+func (l lazyVendor) SpecialPurpose(purposeID consentconstants.Purpose) (hasSpecialPurpose bool) {
+	return idExists(l, int(purposeID), "specialPurposes")
+}
+
 // Returns false unless "id" exists in an array located at "data.key".
 func idExists(data []byte, id int, key string) bool {
 	hasID := false

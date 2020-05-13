@@ -106,6 +106,11 @@ func (l parsedVendor) LegitimateInterestStrict(purposeID consentconstants.Purpos
 	return
 }
 
+// V1 vedndor list does not support special purposes.
+func (l parsedVendor) SpecialPurpose(purposeID consentconstants.Purpose) bool {
+	return false
+}
+
 type vendorListContract struct {
 	Version uint16                     `json:"vendorListVersion"`
 	Vendors []vendorListVendorContract `json:"vendors"`
