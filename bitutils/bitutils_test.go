@@ -71,6 +71,7 @@ var test12Bits = []testDefinition{
 	{testdata, 1, 148},   // Odd offset that fits 2 bytes
 	{testdata, 22, 3780}, // Another even unaligned offset that overflows to 3rd byte
 	{testdata, 4, 1186},  // Offset that aligns to a nibble (these can never overflow)
+	{testdata, 36, 0x2b}, // Corner Case
 }
 
 func TestParseUInt12(t *testing.T) {
@@ -79,6 +80,9 @@ func TestParseUInt12(t *testing.T) {
 
 	i, err = ParseUInt12(testdata, 40)
 	assertStringsEqual(t, "ParseUInt12 expected a 12-bit int to start at bit 40, but the consent string was only 6 bytes long", err.Error())
+
+	i, err = ParseUInt12(testdata, 37)
+	assertStringsEqual(t, "ParseUInt12 expected a 12-bit int to start at bit 37, but the consent string was only 6 bytes long", err.Error())
 
 	for _, test := range test12Bits {
 		i, err = ParseUInt12(test.data, test.offset)

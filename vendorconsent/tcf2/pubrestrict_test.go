@@ -49,3 +49,8 @@ func TestPubRestrictions2(t *testing.T) {
 	// Verifying that this special case doesn't bleed over to other vendors.
 	assertBoolsEqual(t, false, consent.CheckPubRestriction(2, 1, 42))
 }
+
+func TestPubRestrictions3(t *testing.T) {
+	_, err := Parse(decode(t, "COzSDo9OzSDo9B9AAAENAiCAALAAAAAAAAAACOQAQCOAAAAA"))
+	assertNilError(t, err)
+}
