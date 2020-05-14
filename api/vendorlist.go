@@ -32,4 +32,6 @@ type Vendor interface {
 	LegitimateInterest(purposeID consentconstants.Purpose) bool
 	// LegitimateInterestStrict checks only for the primary legitimate, not considering flex purposes.
 	LegitimateInterestStrict(purposeID consentconstants.Purpose) (hasLegitimateInterest bool)
+	// SpecialPurpose returns true if this vendor claims a need for the given special purpose
+	SpecialPurpose(purposeID consentconstants.Purpose) (hasSpecialPurpose bool)
 }

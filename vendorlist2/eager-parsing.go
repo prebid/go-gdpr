@@ -46,6 +46,7 @@ func parseVendor(contract vendorListVendorContract) parsedVendor {
 		purposes:            mapify(contract.Purposes),
 		legitimateInterests: mapify(contract.LegitimateInterests),
 		flexiblePurposes:    mapify(contract.FlexiblePurposes),
+		specialPurposes:     mapify(contract.SpecialPurposes),
 	}
 
 	return parsed
@@ -81,6 +82,7 @@ type parsedVendor struct {
 	purposes            map[consentconstants.Purpose]struct{}
 	legitimateInterests map[consentconstants.Purpose]struct{}
 	flexiblePurposes    map[consentconstants.Purpose]struct{}
+	specialPurposes     map[consentconstants.Purpose]struct{}
 }
 
 func (l parsedVendor) Purpose(purposeID consentconstants.Purpose) (hasPurpose bool) {
@@ -97,7 +99,7 @@ func (l parsedVendor) PurposeStrict(purposeID consentconstants.Purpose) (hasPurp
 	return
 }
 
-// LegitimateInterest retursn true if this vendor claims a "Legitimate Interest" to
+// LegitimateInterest returns true if this vendor claims a "Legitimate Interest" to
 // use data for the given purpose.
 //
 // For an explanation of legitimate interest, see https://www.gdpreu.org/the-regulation/key-concepts/legitimate-interest/
@@ -115,6 +117,12 @@ func (l parsedVendor) LegitimateInterestStrict(purposeID consentconstants.Purpos
 	return
 }
 
+// SpecialPurpose returns true if this vendor claims a need for the given special purpose
+func (l parsedVendor) SpecialPurpose(purposeID consentconstants.Purpose) (hasSpecialPurpose bool) {
+	_, hasSpecialPurpose = l.specialPurposes[purposeID]
+	return
+}
+
 type vendorListContract struct {
 	Version uint16                              `json:"vendorListVersion"`
 	Vendors map[string]vendorListVendorContract `json:"vendors"`
@@ -125,4 +133,5 @@ type vendorListVendorContract struct {
 	Purposes            []uint8 `json:"purposes"`
 	LegitimateInterests []uint8 `json:"legIntPurposes"`
 	FlexiblePurposes    []uint8 `json:"flexiblePurposes"`
+	SpecialPurposes     []uint8 `json:"specialPurposes"`
 }
