@@ -49,10 +49,12 @@ func ParseVersion(decodedConsent []byte) (uint8, error) {
 
 // Backwards compatibility
 
+// VendorConsents old interface
 type VendorConsents interface {
 	api.VendorConsents
 }
 
+// Parse method is the equivalent of call tcf1.Parse(...)
 func Parse(data []byte) (api.VendorConsents, error) {
 	return tcf1.Parse(data)
 }
