@@ -1,7 +1,6 @@
 package vendorconsent
 
 import (
-	"encoding/binary"
 	"fmt"
 
 	"github.com/prebid/go-gdpr/bitutils"
@@ -35,15 +34,6 @@ func parseRangeSection(metadata ConsentMetadata, maxVendorID uint16, startbit ui
 		consents:    consents,
 		maxVendorID: maxVendorID,
 	}, currentOffset, nil
-}
-
-// parse the value of NumEntries, assuming this consent string uses a RangeEntry
-func parseNumEntries(data []byte) uint16 {
-	// This should isolate the bits [000000xx, xxxxxxxx, xx000000] to get bits 230-241 as an int
-	leftByte := ((data[28] & 0x03) << 2) | (data[29] >> 6)
-	rightByte := (data[29] << 2) | (data[30] >> 6)
-
-	return binary.BigEndian.Uint16([]byte{leftByte, rightByte})
 }
 
 // RangeSection Exception implemnetations
@@ -99,7 +89,7 @@ type rangeSection struct {
 }
 
 // VendorConsents implementation
-func (p rangeSection) VendorConsent(id uint16) bool {
+func (p rangeSection) VendorConsent(id uint16) bool { // TODO consider convert to pointer receiver
 	if id < 1 || id > p.maxVendorID {
 		return false
 	}
@@ -131,6 +121,6 @@ type rangeVendorConsent struct {
 	endID   uint16
 }
 
-func (e rangeVendorConsent) Contains(id uint16) bool {
+func (e rangeVendorConsent) Contains(id uint16) bool { // TODO consider convert to pointer receiver
 	return e.startID <= id && e.endID >= id
 }
