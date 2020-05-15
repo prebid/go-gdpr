@@ -37,10 +37,10 @@ func BenchmarkParse(b *testing.B) {
 			"consent v1 nok",
 			"BONciguONcjGKADACHENAOLS1rAAPABgAEAAIA3", // nok
 		},
-    {
-      "consent v1 maxvendorid=0",
-      "BOzZB5dOzZB5dADABAENABAAAAAAAA",
-    },
+		{
+			"consent v1 maxvendorid=0",
+			"BOzZB5dOzZB5dADABAENABAAAAAAAA",
+		},
 		{
 			"short consent v2 ok",
 			"COzSDo9OzSDo9B9AAAENAiCAALAAAAAAAAAACOQAQCOAAAAA", // v2

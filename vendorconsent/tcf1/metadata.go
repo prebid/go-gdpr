@@ -10,7 +10,7 @@ import (
 )
 
 var (
-  errInvalidVendorListVersion = errors.New("the consent string encoded a VendorListVersion of 0, but this value must be greater than or equal to 1")
+	errInvalidVendorListVersion = errors.New("the consent string encoded a VendorListVersion of 0, but this value must be greater than or equal to 1")
 )
 
 // Parse the metadata from the consent string.

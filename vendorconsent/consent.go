@@ -11,19 +11,19 @@ import (
 )
 
 const (
-  consentStringTCF2Separator = '.'
+	consentStringTCF2Separator = '.'
 )
 
 var (
-  errEmptyDecodedConsent = fmt.Errorf("decoded consent cannot be empty")
+	errEmptyDecodedConsent = fmt.Errorf("decoded consent cannot be empty")
 )
 
 // ParseString parses a Raw (unpadded) base64 URL encoded string.
 func ParseString(consent string) (api.VendorConsents, error) {
 	// split TCF 2.0 segments
-  if index := strings.IndexByte(consent, consentStringTCF2Separator); index != -1 {
-    consent = consent[:index]
-  }
+	if index := strings.IndexByte(consent, consentStringTCF2Separator); index != -1 {
+		consent = consent[:index]
+	}
 	decoded, err := base64.RawURLEncoding.DecodeString(consent)
 	if err != nil {
 		return nil, err
