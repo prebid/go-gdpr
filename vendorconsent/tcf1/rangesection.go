@@ -88,7 +88,7 @@ func parseException(data consentMetadata, initialBit uint) (rangeException, uint
 }
 
 // parseUInt16  parses a 16-bit integer from the data array, starting at the given index
-func parseUInt16(data []byte, bitStartIndex uint) (uint16, error) {
+func parseUInt16(data []byte, bitStartIndex uint) (uint16, error) { // tiago: why not use the bitutils.ParseUint16 ?
 	startByte := bitStartIndex / 8
 	bitStartOffset := bitStartIndex % 8
 	if bitStartOffset == 0 {
@@ -122,7 +122,7 @@ type rangeSection struct {
 }
 
 // VendorConsents implementation
-func (p rangeSection) VendorConsent(id uint16) bool {
+func (p rangeSection) VendorConsent(id uint16) bool { // TODO check if possible convert to pointer receiver
 	if id < 1 || id > p.MaxVendorID() {
 		return false
 	}
@@ -154,6 +154,6 @@ type rangeVendorException struct {
 	endID   uint16
 }
 
-func (e rangeVendorException) Contains(id uint16) bool {
+func (e rangeVendorException) Contains(id uint16) bool { // TODO check if possible convert to pointer receiver
 	return e.startID <= id && e.endID >= id
 }
