@@ -10,10 +10,18 @@ import (
 	tcf2 "github.com/prebid/go-gdpr/vendorconsent/tcf2"
 )
 
+const (
+  consentStringTCF2Separator = "."
+)
+
+var (
+  errEmptyDecodedConsent = fmt.Errorf("decoded consent cannot be empty")
+)
+
 // ParseString parses a Raw (unpadded) base64 URL encoded string.
 func ParseString(consent string) (api.VendorConsents, error) {
 	// split TCF 2.0 segments
-	segments := strings.SplitN(consent, ".", 4) // specify max substrings to limit memory usage if there are a lot of occurrences of '.'
+	segments := strings.SplitN(consent, consentStringTCF2Separator, 4) // specify max substrings to limit memory usage if there are a lot of occurrences of '.'
 	decoded, err := base64.RawURLEncoding.DecodeString(segments[0])
 	if err != nil {
 		return nil, err
@@ -31,7 +39,7 @@ func ParseString(consent string) (api.VendorConsents, error) {
 // ParseVersion parses version from base64-decoded consent string
 func ParseVersion(decodedConsent []byte) (uint8, error) {
 	if len(decodedConsent) == 0 {
-		return 0, fmt.Errorf("decoded consent cannot be empty")
+		return 0, errEmptyDecodedConsent
 	}
 	// read version from first 6 bits
 	return decodedConsent[0] >> 2, nil

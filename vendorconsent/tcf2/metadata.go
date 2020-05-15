@@ -9,6 +9,10 @@ import (
 	"github.com/prebid/go-gdpr/consentconstants"
 )
 
+var (
+  errInvalidVendorListVersion = errors.New("the consent string encoded a VendorListVersion of 0, but this value must be greater than or equal to 1") 
+)
+
 // parseMetadata parses the metadata from the consent string.
 // This returns an error if the input is too short to answer questions about that data.
 func parseMetadata(data []byte) (ConsentMetadata, error) {
@@ -25,7 +29,7 @@ func parseMetadata(data []byte) (ConsentMetadata, error) {
 	}
 	if metadata.VendorListVersion() == 0 {
 		metadata.data = nil
-		return metadata, errors.New("the consent string encoded a VendorListVersion of 0, but this value must be greater than or equal to 1")
+		return metadata, errInvalidVendorListVersion
 
 	}
 	return metadata, nil
