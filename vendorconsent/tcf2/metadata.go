@@ -10,7 +10,7 @@ import (
 )
 
 var (
-  errInvalidVendorListVersion = errors.New("the consent string encoded a VendorListVersion of 0, but this value must be greater than or equal to 1") 
+	errInvalidVendorListVersion = errors.New("the consent string encoded a VendorListVersion of 0, but this value must be greater than or equal to 1")
 )
 
 // parseMetadata parses the metadata from the consent string.
@@ -137,7 +137,7 @@ func (c ConsentMetadata) VendorListVersion() uint16 {
 	return binary.BigEndian.Uint16([]byte{leftByte, rightByte})
 }
 
-// MaxVendorID returns the maximum value for vendor identifier in bits 213 to 228 
+// MaxVendorID returns the maximum value for vendor identifier in bits 213 to 228
 func (c ConsentMetadata) MaxVendorID() uint16 {
 	// The max vendor ID is stored in bits 213 - 228 [00000xxx xxxxxxxx xxxxx000]
 	leftByte := ((c.data[26] & 0x07) << 5) | ((c.data[27] & 0xf8) >> 3)
@@ -150,7 +150,7 @@ func (c ConsentMetadata) PurposeAllowed(id consentconstants.Purpose) bool {
 	// Purposes are stored in bits 152 - 175. The interface contract only defines behavior for ints in the range [1, 24]...
 	// so in the valid range, this won't even overflow a uint8.
 	if id > 24 {
-		id = 24 // tiago: why this behavior is different than PurposeLITransparency? should we check for 0 and negative too? 
+		id = 24 // tiago: why this behavior is different than PurposeLITransparency? should we check for 0 and negative too?
 	}
 	return isSet(c.data, uint(id)+151)
 }
@@ -164,6 +164,7 @@ func (c ConsentMetadata) PurposeLITransparency(id consentconstants.Purpose) bool
 	}
 	return isSet(c.data, uint(id)+175)
 }
+
 // PurposeOneTreatment returns if Purpose 1 is enable, info stored in bit 200
 func (c ConsentMetadata) PurposeOneTreatment() bool {
 	return isSet(c.data, 200)
