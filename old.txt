@@ -1,0 +1,16 @@
+goos: linux
+goarch: amd64
+pkg: github.com/prebid/go-gdpr/vendorconsent
+BenchmarkParse/all_testcases-4         	  427514	      2608 ns/op	    6806 B/op	       6 allocs/op
+BenchmarkParse/case_empty_string-4     	 4384898	       267 ns/op	     112 B/op	       3 allocs/op
+BenchmarkParse/case_explicit_nok_string-4         	 5456374	       227 ns/op	      88 B/op	       3 allocs/op
+BenchmarkParse/case_bad_encoded_string-4          	 6065510	       201 ns/op	      88 B/op	       3 allocs/op
+BenchmarkParse/case_short_consent_v1_ok-4         	 3877179	       308 ns/op	     160 B/op	       3 allocs/op
+BenchmarkParse/case_long_consent_v1_ok-4          	 1943306	       593 ns/op	     416 B/op	       4 allocs/op
+BenchmarkParse/case_consent_v1_nok-4              	 1464403	       818 ns/op	     288 B/op	       9 allocs/op
+BenchmarkParse/case_consent_v1_maxvendorid=0-4    	 2353584	       521 ns/op	     208 B/op	       4 allocs/op
+BenchmarkParse/case_short_consent_v2_ok-4         	 1417856	       843 ns/op	     442 B/op	      10 allocs/op
+BenchmarkParse/case_long_consent_v2_ok-4          	 1387875	       864 ns/op	     442 B/op	      10 allocs/op
+BenchmarkParse/case_bad_consent_v2-4              	   58942	     20750 ns/op	   65819 B/op	      11 allocs/op
+PASS
+ok  	github.com/prebid/go-gdpr/vendorconsent	18.093s
