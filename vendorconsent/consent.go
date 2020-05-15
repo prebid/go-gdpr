@@ -11,7 +11,7 @@ import (
 )
 
 const (
-  consentStringTCF2Separator = "."
+  consentStringTCF2Separator = '.'
 )
 
 var (
@@ -21,8 +21,10 @@ var (
 // ParseString parses a Raw (unpadded) base64 URL encoded string.
 func ParseString(consent string) (api.VendorConsents, error) {
 	// split TCF 2.0 segments
-	segments := strings.SplitN(consent, consentStringTCF2Separator, 4) // specify max substrings to limit memory usage if there are a lot of occurrences of '.'
-	decoded, err := base64.RawURLEncoding.DecodeString(segments[0])
+  if index := strings.IndexByte(consent, consentStringTCF2Separator); index != -1 {
+    consent = consent[:index]
+  }
+	decoded, err := base64.RawURLEncoding.DecodeString(consent)
 	if err != nil {
 		return nil, err
 	}
