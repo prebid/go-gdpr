@@ -1,6 +1,25 @@
 package vendorconsent
 
-import "github.com/prebid/go-gdpr/api"
+import (
+	"encoding/base64"
+	"fmt"
+
+	"github.com/prebid/go-gdpr/api"
+)
+
+var errEmptyDecodedConsent = fmt.Errorf("decoded consent cannot be empty")
+
+// ParseString parses the TCF 1.x vendor string base64 encoded
+func ParseString(consent string) (api.VendorConsents, error) {
+	if consent == "" {
+		return nil, errEmptyDecodedConsent
+	}
+	decoded, err := base64.RawURLEncoding.DecodeString(consent)
+	if err != nil {
+		return nil, err
+	}
+	return Parse(decoded)
+}
 
 // Parse the vendor consent data from the string. This string should *not* be encoded (by base64 or any other encoding).
 // If the data is malformed and cannot be interpreted as a vendor consent string, this will return an error.
