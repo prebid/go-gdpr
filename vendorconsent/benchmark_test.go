@@ -119,38 +119,4 @@ func BenchmarkVerify(b *testing.B) {
 		_ = consent
 		_ = err
 	})
-
-	b.Run(fmt.Sprintf("testing parsing and verify %d consents I", max), func(b *testing.B) {
-		var consent api.VendorConsents
-		var err error
-		var ok bool
-
-		for n := 0; n < b.N; n++ {
-			consent, err = vendorconsent.ParseString(consents[n%max])
-			if err != nil {
-				continue
-			}
-			ok = consent.VendorConsent(284) && consent.PurposeAllowed(1)
-		}
-		_ = consent
-		_ = err
-		_ = ok
-	})
-
-	b.Run(fmt.Sprintf("testing parsing and verify %d consents II", max), func(b *testing.B) {
-		var consent api.VendorConsents
-		var err error
-		var ok bool
-
-		for n := 0; n < b.N; n++ {
-			consent, err = vendorconsent.ParseString(consents[n%max])
-			if err != nil {
-				continue
-			}
-			ok = consent.PurposeAllowed(1) && consent.VendorConsent(284)
-		}
-		_ = consent
-		_ = err
-		_ = ok
-	})
 }
