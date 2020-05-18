@@ -1,17 +1,11 @@
 package vendorconsent
 
 import (
-	"encoding/base64"
 	"fmt"
-	"strings"
 
 	"github.com/prebid/go-gdpr/api"
 	tcf1 "github.com/prebid/go-gdpr/vendorconsent/tcf1"
 	tcf2 "github.com/prebid/go-gdpr/vendorconsent/tcf2"
-)
-
-const (
-	consentStringTCF2Separator = '.'
 )
 
 var (
@@ -20,22 +14,15 @@ var (
 
 // ParseString parses a Raw (unpadded) base64 URL encoded string.
 func ParseString(consent string) (api.VendorConsents, error) {
-	// split TCF 2.0 segments
-	if index := strings.IndexByte(consent, consentStringTCF2Separator); index != -1 {
-		consent = consent[:index]
+	if consent == "" {
+		return nil, errEmptyDecodedConsent
 	}
-	decoded, err := base64.RawURLEncoding.DecodeString(consent)
-	if err != nil {
-		return nil, err
+
+	if tcf2.IsConsentV2(consent) {
+		return tcf2.ParseString(consent)
 	}
-	version, err := ParseVersion(decoded)
-	if err != nil {
-		return nil, err
-	}
-	if version == 2 {
-		return tcf2.Parse(decoded)
-	}
-	return tcf1.Parse(decoded)
+
+	return tcf1.ParseString(consent)
 }
 
 // ParseVersion parses version from base64-decoded consent string
