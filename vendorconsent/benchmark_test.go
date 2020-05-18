@@ -1,7 +1,10 @@
 package vendorconsent_test
 
 import (
+	"bufio"
+	"flag"
 	"fmt"
+	"os"
 	"testing"
 
 	"github.com/prebid/go-gdpr/api"
@@ -82,4 +85,72 @@ func BenchmarkParse(b *testing.B) {
 			_ = err
 		})
 	}
+}
+
+var consentFile string
+
+func init() {
+	flag.StringVar(&consentFile, "consent-file", "", "ascii consent file")
+}
+func BenchmarkVerify(b *testing.B) {
+	if consentFile == "" {
+		b.SkipNow()
+	}
+	readFile, err := os.Open(consentFile)
+	if err != nil {
+		b.FailNow() // abort
+	}
+	defer readFile.Close()
+	fileScanner := bufio.NewScanner(readFile)
+	fileScanner.Split(bufio.ScanLines)
+	var consents []string
+
+	for fileScanner.Scan() {
+		consents = append(consents, fileScanner.Text())
+	}
+
+	max := len(consents)
+	b.Run(fmt.Sprintf("testing just parsing %d consents/string", max), func(b *testing.B) {
+		var consent api.VendorConsents
+		var err error
+		for n := 0; n < b.N; n++ {
+			consent, err = vendorconsent.ParseString(consents[n%max])
+		}
+		_ = consent
+		_ = err
+	})
+
+	b.Run(fmt.Sprintf("testing parsing and verify %d consents I", max), func(b *testing.B) {
+		var consent api.VendorConsents
+		var err error
+		var ok bool
+
+		for n := 0; n < b.N; n++ {
+			consent, err = vendorconsent.ParseString(consents[n%max])
+			if err != nil {
+				continue
+			}
+			ok = consent.VendorConsent(284) && consent.PurposeAllowed(1)
+		}
+		_ = consent
+		_ = err
+		_ = ok
+	})
+
+	b.Run(fmt.Sprintf("testing parsing and verify %d consents II", max), func(b *testing.B) {
+		var consent api.VendorConsents
+		var err error
+		var ok bool
+
+		for n := 0; n < b.N; n++ {
+			consent, err = vendorconsent.ParseString(consents[n%max])
+			if err != nil {
+				continue
+			}
+			ok = consent.PurposeAllowed(1) && consent.VendorConsent(284)
+		}
+		_ = consent
+		_ = err
+		_ = ok
+	})
 }
