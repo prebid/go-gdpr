@@ -14,10 +14,15 @@ func ParseString(consent string) (api.VendorConsents, error) {
 	if consent == "" {
 		return nil, errEmptyDecodedConsent
 	}
-	decoded, err := base64.RawURLEncoding.DecodeString(consent)
+
+	buff := []byte(consent)
+	decoded := buff
+	n, err := base64.RawURLEncoding.Decode(decoded, buff)
 	if err != nil {
 		return nil, err
 	}
+	decoded = decoded[:n:n]
+
 	return Parse(decoded)
 }
 
