@@ -22,10 +22,15 @@ func ParseString(consent string) (api.VendorConsents, error) {
 	if index := strings.IndexByte(consent, consentStringTCF2Separator); index != -1 {
 		consent = consent[:index]
 	}
-	decoded, err := base64.RawURLEncoding.DecodeString(consent)
+
+	buff := []byte(consent)
+	decoded := buff
+	n, err := base64.RawURLEncoding.Decode(decoded, buff)
 	if err != nil {
 		return nil, err
 	}
+	decoded = decoded[:n:n]
+
 	return Parse(decoded)
 }
 
