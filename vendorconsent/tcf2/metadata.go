@@ -126,6 +126,10 @@ func (c ConsentMetadata) VendorListVersion() uint16 {
 	return binary.BigEndian.Uint16([]byte{leftByte, rightByte})
 }
 
+func (c ConsentMetadata) MaxLegitimateInterestVendorID() uint16 {
+	return c.vendorLegitimateInterests.MaxVendorID()
+}
+
 func (c ConsentMetadata) MaxVendorID() uint16 {
 	// The max vendor ID is stored in bits 213 - 228 [00000xxx xxxxxxxx xxxxx000]
 	leftByte := ((c.data[26] & 0x07) << 5) | ((c.data[27] & 0xf8) >> 3)

@@ -38,7 +38,7 @@ func TestRangeSectionConsent(t *testing.T) {
 	// TODO func VendorLegitInterest() should be added to api.VendorConsents
 	consentMetadata := consent.(ConsentMetadata)
 	vendorsLegitimateInterestWithConsent := buildMap(24, 44, 129, 130, 131, 591, 614, 628)
-	for i := uint16(1); i <= consent.MaxVendorID(); i++ {
+	for i := uint16(1); i <= consentMetadata.MaxLegitimateInterestVendorID(); i++ {
 		_, expected := vendorsLegitimateInterestWithConsent[uint(i)]
 		actual := consentMetadata.VendorLegitInterest(i)
 		if expected != actual {
