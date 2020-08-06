@@ -100,6 +100,14 @@ type rangeSection struct {
 	maxVendorID uint16
 }
 
+func (p *rangeSection) MaxVendorID() uint16 {
+	if p == nil {
+		return 0
+	}
+
+	return p.maxVendorID
+}
+
 // VendorConsents implementation
 func (p rangeSection) VendorConsent(id uint16) bool {
 	if id < 1 || id > p.maxVendorID {

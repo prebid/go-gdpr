@@ -44,6 +44,7 @@ type ConsentMetadata struct {
 }
 
 type vendorConsentsResolver interface {
+	MaxVendorID() uint16
 	VendorConsent(id uint16) bool
 }
 

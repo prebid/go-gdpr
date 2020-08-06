@@ -26,6 +26,14 @@ type consentBitField struct {
 	maxVendorID uint16
 }
 
+func (f *consentBitField) MaxVendorID() uint16 {
+	if f == nil {
+		return 0
+	}
+
+	return f.maxVendorID
+}
+
 func (f *consentBitField) VendorConsent(id uint16) bool {
 	if id < 1 || id > f.maxVendorID {
 		return false
