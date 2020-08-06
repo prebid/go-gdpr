@@ -8,14 +8,14 @@ import (
 func TestRangeSectionConsent(t *testing.T) {
 	// String built using http://iabtcf.com/#/encode
 	// This sample encodes a mix of Single- and Range-typed consent exceptions.
-	consent, err := Parse(decode(t, "COyiILmOyiILmADACHENAPCAAAAAAAAAAAAAE5QBgALgAqgD8AQACSwEygJyAAAAAA"))
+	consent, err := Parse(decode(t, "COyfVVoOyfVVoADACHENAwCAAAAAAAAAAAAAE5QBgALgAqgD8AQACSwEygJyAnSAMABgAFkAgQCDASeAmYBOgAA"))
 	assertNilError(t, err)
 	assertUInt8sEqual(t, 2, consent.Version())
 	assertUInt16sEqual(t, 3, consent.CmpID())
 	assertUInt16sEqual(t, 2, consent.CmpVersion())
 	assertUInt8sEqual(t, 7, consent.ConsentScreen())
 	assertStringsEqual(t, "EN", consent.ConsentLanguage())
-	assertUInt16sEqual(t, 15, consent.VendorListVersion())
+	assertUInt16sEqual(t, 48, consent.VendorListVersion())
 	assertUInt16sEqual(t, 626, consent.MaxVendorID())
 
 	//  The above encoder doesn't support setting purposes.
@@ -27,11 +27,24 @@ func TestRangeSectionConsent(t *testing.T) {
 
 	vendorsWithConsent := buildMap(23, 42, 126, 127, 128, 587, 613, 626)
 	for i := uint16(1); i <= consent.MaxVendorID(); i++ {
-		_, ok := vendorsWithConsent[uint(i)]
-		if ok != consent.VendorConsent(i) {
+		_, expected := vendorsWithConsent[uint(i)]
+		actual := consent.VendorConsent(i)
+		if expected != actual {
 			fmt.Printf("Vendor: %d failed\n", i)
 		}
-		assertBoolsEqual(t, ok, consent.VendorConsent(i))
+		assertBoolsEqual(t, expected, actual)
+	}
+
+	// TODO func VendorLegitInterest() should be added to api.VendorConsents
+	consentMetadata := consent.(ConsentMetadata)
+	vendorsLegitimateInterestWithConsent := buildMap(24, 44, 129, 130, 131, 591, 614, 628)
+	for i := uint16(1); i <= consent.MaxVendorID(); i++ {
+		_, expected := vendorsLegitimateInterestWithConsent[uint(i)]
+		actual := consentMetadata.VendorLegitInterest(i)
+		if expected != actual {
+			fmt.Printf("VendorLegitInterest: %d failed\n", i)
+		}
+		assertBoolsEqual(t, expected, actual)
 	}
 }
 

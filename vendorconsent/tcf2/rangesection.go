@@ -9,17 +9,19 @@ import (
 
 func parseRangeSection(metadata ConsentMetadata, maxVendorID uint16, startbit uint) (*rangeSection, uint, error) {
 	data := metadata.data
-	// This makes an int from bits 230-241
+
 	if len(data) < 31 {
 		return nil, 0, fmt.Errorf("vendor consent strings using RangeSections require at least 31 bytes. Got %d", len(data))
 	}
-	numEntries, err := bitutils.ParseUInt12(data, 230)
+
+	// This makes an int from bits [startBit, startBit + 12)
+	numEntries, err := bitutils.ParseUInt12(data, startbit)
 	if err != nil {
 		return nil, 0, err
 	}
 
 	// Parse out the "exceptions" here.
-	currentOffset := uint(242)
+	currentOffset := startbit + 12
 	consents := make([]rangeConsent, numEntries)
 	for i := uint16(0); i < numEntries; i++ {
 		thisConsent, bitsConsumed, err := parseRangeConsent(data, currentOffset, maxVendorID)
