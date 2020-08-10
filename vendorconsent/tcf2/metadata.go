@@ -119,15 +119,15 @@ func (c ConsentMetadata) ConsentLanguage() string {
 	return string([]byte{leftChar + 65, rightChar + 65}) // Unicode A-Z is 65-90
 }
 
+func (c ConsentMetadata) VendorLegitInterestMaxID() uint16 {
+	return c.vendorLegitimateInterests.MaxVendorID()
+}
+
 func (c ConsentMetadata) VendorListVersion() uint16 {
 	// The vendor list version is stored in bits 120 - 131
 	rightByte := ((c.data[16] & 0xf0) >> 4) | ((c.data[15] & 0x0f) << 4)
 	leftByte := c.data[15] >> 4
 	return binary.BigEndian.Uint16([]byte{leftByte, rightByte})
-}
-
-func (c ConsentMetadata) MaxLegitimateInterestVendorID() uint16 {
-	return c.vendorLegitimateInterests.MaxVendorID()
 }
 
 func (c ConsentMetadata) MaxVendorID() uint16 {
