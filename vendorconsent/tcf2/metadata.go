@@ -44,6 +44,7 @@ type ConsentMetadata struct {
 }
 
 type vendorConsentsResolver interface {
+	MaxVendorID() uint16
 	VendorConsent(id uint16) bool
 }
 
@@ -116,6 +117,10 @@ func (c ConsentMetadata) ConsentLanguage() string {
 	leftChar := ((c.data[13] & 0x0f) << 2) | c.data[14]>>6
 	rightChar := c.data[14] & 0x3f
 	return string([]byte{leftChar + 65, rightChar + 65}) // Unicode A-Z is 65-90
+}
+
+func (c ConsentMetadata) VendorLegitInterestMaxID() uint16 {
+	return c.vendorLegitimateInterests.MaxVendorID()
 }
 
 func (c ConsentMetadata) VendorListVersion() uint16 {
