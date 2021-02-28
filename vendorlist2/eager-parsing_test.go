@@ -30,5 +30,6 @@ func TestParseEagerlyVendorsEmpty(t *testing.T) {
 	vendorList, err := ParseEagerly([]byte(vendorListJSON))
 
 	assert.NoError(t, err)
+	assert.Equal(t, vendorList.Version(), uint16(28))
 	assert.Nil(t, vendorList.Vendor(0))
 }
