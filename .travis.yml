@@ -1,8 +1,9 @@
 language: go
 go:
-    - "1.14"
-    - "1.12"
     - "1.13"
+    - "1.14"
+    - "1.15"
+    - "1.16"
 
 script:
     - go test -timeout 30s github.com/prebid/go-gdpr/bitutils
