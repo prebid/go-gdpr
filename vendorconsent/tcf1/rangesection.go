@@ -88,7 +88,7 @@ func parseException(data consentMetadata, initialBit uint) (rangeException, uint
 }
 
 // parseUInt16  parses a 16-bit integer from the data array, starting at the given index
-func parseUInt16(data []byte, bitStartIndex uint) (uint16, error) { // tiago: why not use the bitutils.ParseUint16 ?
+func parseUInt16(data []byte, bitStartIndex uint) (uint16, error) {
 	startByte := bitStartIndex / 8
 	bitStartOffset := bitStartIndex % 8
 	if bitStartOffset == 0 {
