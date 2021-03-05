@@ -130,6 +130,7 @@ func (c ConsentMetadata) ConsentLanguage() string {
 	return string([]byte{leftChar + 65, rightChar + 65}) // Unicode A-Z is 65-90
 }
 
+// VendorLegitInterestMaxID returns the vendor legitimate interest max id
 func (c ConsentMetadata) VendorLegitInterestMaxID() uint16 {
 	return c.vendorLegitimateInterests.MaxVendorID()
 }
