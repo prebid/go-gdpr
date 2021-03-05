@@ -67,7 +67,7 @@ const (
 	decisPerOne  = 10
 )
 
-// Created returns the created date stored in bits 6 to 41
+// Created returns the created date stored in bits 7 to 42
 func (c ConsentMetadata) Created() time.Time {
 	// Stored in bits 6-41.. which is [000000xx xxxxxxxx xxxxxxxx xxxxxxxx xxxxxxxx xx000000] starting at the 1st byte
 	deciseconds := int64(binary.BigEndian.Uint64([]byte{
@@ -83,7 +83,7 @@ func (c ConsentMetadata) Created() time.Time {
 	return time.Unix(deciseconds/decisPerOne, (deciseconds%decisPerOne)*nanosPerDeci)
 }
 
-// LastUpdated returns the last updated date stored in bits 42 to 77
+// LastUpdated returns the last updated date stored in bits 43 to 78
 func (c ConsentMetadata) LastUpdated() time.Time {
 	// Stored in bits 42-77... which is [00xxxxxx xxxxxxxx xxxxxxxx xxxxxxxx xxxxxx00 ] starting at the 6th byte
 	deciseconds := int64(binary.BigEndian.Uint64([]byte{
@@ -99,7 +99,7 @@ func (c ConsentMetadata) LastUpdated() time.Time {
 	return time.Unix(deciseconds/decisPerOne, (deciseconds%decisPerOne)*nanosPerDeci)
 }
 
-// CmpID returns the Consent Management Platform identifier stored in bits 78 to 89
+// CmpID returns the Consent Management Platform identifier stored in bits 79 to 90
 func (c ConsentMetadata) CmpID() uint16 {
 	// Stored in bits 78-89... which is [000000xx xxxxxxxx xx000000] starting at the 10th byte
 	leftByte := ((c.data[9] & 0x03) << 2) | c.data[10]>>6
@@ -107,7 +107,7 @@ func (c ConsentMetadata) CmpID() uint16 {
 	return binary.BigEndian.Uint16([]byte{leftByte, rightByte})
 }
 
-// CmpVersion returns the Consent Management Platform version stored in bits 90 to 101
+// CmpVersion returns the Consent Management Platform version stored in bits 91 to 102
 func (c ConsentMetadata) CmpVersion() uint16 {
 	// Stored in bits 90-101.. which is [00xxxxxx xxxxxx00] starting at the 12th byte
 	leftByte := (c.data[11] >> 2) & 0x0f
@@ -115,13 +115,13 @@ func (c ConsentMetadata) CmpVersion() uint16 {
 	return binary.BigEndian.Uint16([]byte{leftByte, rightByte})
 }
 
-// ConsentScreen returns the consent screen info stored in bits 102 to 107
+// ConsentScreen returns the consent screen info stored in bits 103 to 108
 func (c ConsentMetadata) ConsentScreen() uint8 {
 	// Stored in bits 102-107.. which is [000000xx xxxx0000] starting at the 13th byte
 	return uint8(((c.data[12] & 0x03) << 4) | c.data[13]>>4)
 }
 
-// ConsentLanguage returns the two letter code for consent language stored in bits 108 to 119
+// ConsentLanguage returns the two letter code for consent language stored in bits 109 to 120
 func (c ConsentMetadata) ConsentLanguage() string {
 	// Stored in bits 108-119... which is [0000xxxx xxxxxxxx] starting at the 14th byte.
 	// Each letter is stored as 6 bits, with A=0 and Z=25
