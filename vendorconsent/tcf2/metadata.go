@@ -56,7 +56,7 @@ type pubRestrictResolver interface {
 	CheckPubRestriction(purposeID uint8, restrictType uint8, vendor uint16) bool
 }
 
-// Version returns the version stored in the first 5 bits
+// Version returns the version stored in the first 6 bits
 func (c ConsentMetadata) Version() uint8 {
 	// Stored in bits 0-5
 	return uint8(c.data[0] >> 2)
