@@ -2,21 +2,19 @@ package vendorconsent
 
 import (
 	"encoding/base64"
-	"fmt"
 	"strings"
 
 	"github.com/prebid/go-gdpr/api"
 	"github.com/prebid/go-gdpr/bitutils"
+	"github.com/prebid/go-gdpr/consentconstants"
 )
 
 const consentStringTCF2Separator = '.'
 
-var errEmptyDecodedConsent = fmt.Errorf("decoded consent cannot be empty")
-
 // ParseString parses the TCF 2.0 vendor string base64 encoded
 func ParseString(consent string) (api.VendorConsents, error) {
 	if consent == "" {
-		return nil, errEmptyDecodedConsent
+		return nil, consentconstants.ErrEmptyDecodedConsent
 	}
 	// split TCF 2.0 segments
 	if index := strings.IndexByte(consent, consentStringTCF2Separator); index != -1 {

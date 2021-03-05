@@ -2,17 +2,15 @@ package vendorconsent
 
 import (
 	"encoding/base64"
-	"fmt"
 
 	"github.com/prebid/go-gdpr/api"
+	"github.com/prebid/go-gdpr/consentconstants"
 )
-
-var errEmptyDecodedConsent = fmt.Errorf("decoded consent cannot be empty")
 
 // ParseString parses the TCF 1.x vendor string base64 encoded
 func ParseString(consent string) (api.VendorConsents, error) {
 	if consent == "" {
-		return nil, errEmptyDecodedConsent
+		return nil, consentconstants.ErrEmptyDecodedConsent
 	}
 
 	buff := []byte(consent)

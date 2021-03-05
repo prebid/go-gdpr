@@ -1,21 +1,16 @@
 package vendorconsent
 
 import (
-	"fmt"
-
 	"github.com/prebid/go-gdpr/api"
+	"github.com/prebid/go-gdpr/consentconstants"
 	tcf1 "github.com/prebid/go-gdpr/vendorconsent/tcf1"
 	tcf2 "github.com/prebid/go-gdpr/vendorconsent/tcf2"
-)
-
-var (
-	errEmptyDecodedConsent = fmt.Errorf("decoded consent cannot be empty")
 )
 
 // ParseString parses a Raw (unpadded) base64 URL encoded string.
 func ParseString(consent string) (api.VendorConsents, error) {
 	if consent == "" {
-		return nil, errEmptyDecodedConsent
+		return nil, consentconstants.ErrEmptyDecodedConsent
 	}
 
 	if tcf2.IsConsentV2(consent) {
@@ -28,7 +23,7 @@ func ParseString(consent string) (api.VendorConsents, error) {
 // ParseVersion parses version from base64-decoded consent string
 func ParseVersion(decodedConsent []byte) (uint8, error) {
 	if len(decodedConsent) == 0 {
-		return 0, errEmptyDecodedConsent
+		return 0, consentconstants.ErrEmptyDecodedConsent
 	}
 	// read version from first 6 bits
 	return decodedConsent[0] >> 2, nil
