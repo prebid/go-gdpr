@@ -37,8 +37,8 @@ func BenchmarkParse(b *testing.B) {
 			"BOzZIf5OzZIgJAHABBFRDG-AAAAvRr_7__7-_9_-_f__9uj3Or_v_f__32ccL59v_h_7v-_7fi_-1nV4u_1vft9yfk1-5ctDztp507iakivXmqdeb1v_nz3_9pxP78k89r7337Ew_v8_v-b7BCPN9Y3v-8KA", // nolinter: lll
 		},
 		{
-			"consent v1 not ok",
-			"BONciguONcjGKADACHENAOLS1rAAPABgAEAAIA3", // not ok
+			"consent v1 not ok does not allow purpose 1 (set cookie)",
+			"BONciguONcjGKADACHENAOLS1rAAPABgAEAAIA3",
 		},
 		{
 			"consent v1 maxvendorid=0",
@@ -53,7 +53,7 @@ func BenchmarkParse(b *testing.B) {
 			"COzSDo9OzSDo9B9AAAENAiCAALAAAAAAAAAACOQAQCOAAAAA.IF5EX2S5OI2tho2YdF7BEYYwfJxyigMgShgQIsS8NwIeFbBoGPmAAHBG4JAQAGBAkkACBAQIsHGBcCQABgIgRiRCMQEGMjzNKBJBAggkbI0FACCVmnkHS3ZCY70-6u__bA", // nolinter: lll
 		},
 		{
-			"bad consent v2",
+			"bad consent v2 - wrong prefix, must start with C",
 			"ONciguONcjGKADACHENAOCIAC0ta__AACiQABwAoABAACA",
 		},
 	}
