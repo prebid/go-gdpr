@@ -9,7 +9,10 @@ import (
 	"github.com/prebid/go-gdpr/consentconstants"
 )
 
-const consentStringTCF2Separator = '.'
+const (
+	consentStringTCF2Separator = '.'
+	consentStringTCF2Prefix    = 'C'
+)
 
 // ParseString parses the TCF 2.0 vendor string base64 encoded
 func ParseString(consent string) (api.VendorConsents, error) {
@@ -87,5 +90,5 @@ func Parse(data []byte) (api.VendorConsents, error) {
 
 // IsConsentV2 return true if the consent strings looks like a tcf v2 consent string
 func IsConsentV2(consent string) bool {
-	return len(consent) > 0 && consent[0] == 'C' // TODO extract C as constang
+	return len(consent) > 0 && consent[0] == consentStringTCF2Prefix
 }
