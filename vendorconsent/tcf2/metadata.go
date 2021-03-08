@@ -156,7 +156,7 @@ func (c ConsentMetadata) PurposeAllowed(id consentconstants.Purpose) bool {
 	// Purposes are stored in bits 152 - 175. The interface contract only defines behavior for ints in the range [1, 24]...
 	// so in the valid range, this won't even overflow a uint8.
 	if id > 24 {
-		id = 24 // tiago: why this behavior is different than PurposeLITransparency? should we check for 0 and negative too?
+		id = 24 
 	}
 	return isSet(c.data, uint(id)+151)
 }
