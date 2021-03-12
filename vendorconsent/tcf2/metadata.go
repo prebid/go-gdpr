@@ -135,23 +135,23 @@ func (c ConsentMetadata) VendorLegitInterestMaxID() uint16 {
 	return c.vendorLegitimateInterests.MaxVendorID()
 }
 
-// VendorListVersion returns the vendor list version stored in bits 120 to 131
+// VendorListVersion returns the vendor list version stored in bits 121 to 132
 func (c ConsentMetadata) VendorListVersion() uint16 {
-	// The vendor list version is stored in bits 120 - 131
+	// The vendor list version is stored in bits 121 - 132
 	rightByte := ((c.data[16] & 0xf0) >> 4) | ((c.data[15] & 0x0f) << 4)
 	leftByte := c.data[15] >> 4
 	return binary.BigEndian.Uint16([]byte{leftByte, rightByte})
 }
 
-// MaxVendorID returns the maximum value for vendor identifier in bits 213 to 228
+// MaxVendorID returns the maximum value for vendor identifier in bits 214 to 229
 func (c ConsentMetadata) MaxVendorID() uint16 {
-	// The max vendor ID is stored in bits 213 - 228 [00000xxx xxxxxxxx xxxxx000]
+	// The max vendor ID is stored in bits 214 - 229
 	leftByte := ((c.data[26] & 0x07) << 5) | ((c.data[27] & 0xf8) >> 3)
 	rightByte := ((c.data[27] & 0x07) << 5) | ((c.data[28] & 0xf8) >> 3)
 	return binary.BigEndian.Uint16([]byte{leftByte, rightByte})
 }
 
-// PurposeAllowed returns if the given purpose (1 to 24 max) is enabled, info stored in bits 152 to 175
+// PurposeAllowed returns if the given purpose (1 to 24 max) is enabled, info stored in bits 153 to 176
 func (c ConsentMetadata) PurposeAllowed(id consentconstants.Purpose) bool {
 	// Purposes are stored in bits 152 - 175. The interface contract only defines behavior for ints in the range [1, 24]...
 	// so in the valid range, this won't even overflow a uint8.
@@ -161,7 +161,7 @@ func (c ConsentMetadata) PurposeAllowed(id consentconstants.Purpose) bool {
 	return isSet(c.data, uint(id)+151)
 }
 
-// PurposeLITransparency returns if the given purpose transparency (1 to 24 max) is enabled, info stored in bits 176 to 199
+// PurposeLITransparency returns if the given purpose transparency (1 to 24 max) is enabled, info stored in bits 177 to 200
 func (c ConsentMetadata) PurposeLITransparency(id consentconstants.Purpose) bool {
 	// Purposes are stored in bits 176 - 199. The interface contract only defines behavior for ints in the range [1, 24]...
 	// so in the valid range, this won't even overflow a uint8.
@@ -171,12 +171,12 @@ func (c ConsentMetadata) PurposeLITransparency(id consentconstants.Purpose) bool
 	return isSet(c.data, uint(id)+175)
 }
 
-// PurposeOneTreatment returns if Purpose 1 is enable, info stored in bit 200
+// PurposeOneTreatment returns if Purpose 1 is enable, info stored in bit 201
 func (c ConsentMetadata) PurposeOneTreatment() bool {
 	return isSet(c.data, 200)
 }
 
-// SpecialFeatureOptIn returns if the given special feature is enable, stored in bits 139 to 151
+// SpecialFeatureOptIn returns if the given special feature is enable, stored in bits 140 to 152
 func (c ConsentMetadata) SpecialFeatureOptIn(id uint16) bool {
 	if id > 12 {
 		return false
