@@ -7,5 +7,5 @@ require (
 	github.com/stretchr/testify v1.7.0
 )
 
-// Version v0.9.0 was accidently tagged as v1.9.0.
+// Version v0.9.0 was accidentally tagged as v1.9.0.
 retract v1.9.0
