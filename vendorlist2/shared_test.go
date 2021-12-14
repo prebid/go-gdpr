@@ -73,6 +73,10 @@ func vendorTester(parser func(data []byte) api.VendorList) func(*testing.T) {
 		assertBoolsEqual(t, false, v.LegitimateInterest(3))
 		assertBoolsEqual(t, false, v.LegitimateInterestStrict(3))
 
+		assertBoolsEqual(t, false, v.SpecialPurpose(1))
+		assertBoolsEqual(t, false, v.SpecialPurpose(2))
+		assertBoolsEqual(t, false, v.SpecialPurpose(3)) // Does not exist yet
+		
 		assertBoolsEqual(t, false, v.SpecialFeature(1))
 		assertBoolsEqual(t, false, v.SpecialFeature(2))
 		assertBoolsEqual(t, false, v.SpecialFeature(3)) // Does not exist yet
