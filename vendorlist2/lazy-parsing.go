@@ -6,7 +6,6 @@ import (
 	"github.com/buger/jsonparser"
 	"github.com/prebid/go-gdpr/api"
 	"github.com/prebid/go-gdpr/consentconstants"
-	tcf2ConsentConstants "github.com/prebid/go-gdpr/consentconstants/tcf2"
 )
 
 // ParseLazily returns a view of the data which re-calculates things on each function call.
@@ -72,7 +71,7 @@ func (l lazyVendor) SpecialPurpose(purposeID consentconstants.Purpose) (hasSpeci
 }
 
 // SpecialFeature returns true if this vendor claims a need for the given special feature
-func (l lazyVendor) SpecialFeature(featureID tcf2ConsentConstants.SpecialFeature) (hasSpecialFeature bool) {
+func (l lazyVendor) SpecialFeature(featureID consentconstants.SpecialFeature) (hasSpecialFeature bool) {
 	return idExists(l, int(featureID), "specialFeatures")
 }
 

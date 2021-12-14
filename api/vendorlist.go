@@ -1,7 +1,6 @@
 package api
 
 import "github.com/prebid/go-gdpr/consentconstants"
-import tcf2ConsentConstants "github.com/prebid/go-gdpr/consentconstants/tcf2"
 
 // VendorList is an interface used to fetch information about an IAB Global Vendor list.
 // For the latest version, see: https://vendorlist.consensu.org/vendorlist.json
@@ -36,5 +35,5 @@ type Vendor interface {
 	// SpecialPurpose returns true if this vendor claims a need for the given special purpose
 	SpecialPurpose(purposeID consentconstants.Purpose) (hasSpecialPurpose bool)
 	// SpecialFeature returns true if this vendor claims a need for the given special feature
-	SpecialFeature(featureID tcf2ConsentConstants.SpecialFeature) (hasSpecialFeature bool)
+	SpecialFeature(featureID consentconstants.SpecialFeature) (hasSpecialFeature bool)
 }

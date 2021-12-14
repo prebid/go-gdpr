@@ -6,7 +6,6 @@ import (
 
 	"github.com/prebid/go-gdpr/api"
 	"github.com/prebid/go-gdpr/consentconstants"
-	tcf2ConsentConstants "github.com/prebid/go-gdpr/consentconstants/tcf2"
 )
 
 // ParseEagerly interprets and validates the Vendor List data up front, before returning it.
@@ -113,7 +112,7 @@ func (l parsedVendor) SpecialPurpose(purposeID consentconstants.Purpose) bool {
 }
 
 // V1 vendor list does not support special features.
-func (l parsedVendor) SpecialFeature(featureID tcf2ConsentConstants.SpecialFeature) bool {
+func (l parsedVendor) SpecialFeature(featureID consentconstants.SpecialFeature) bool {
 	return false
 }
 

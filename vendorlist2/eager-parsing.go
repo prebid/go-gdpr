@@ -6,7 +6,6 @@ import (
 
 	"github.com/prebid/go-gdpr/api"
 	"github.com/prebid/go-gdpr/consentconstants"
-	tcf2ConsentConstants "github.com/prebid/go-gdpr/consentconstants/tcf2"
 )
 
 // ParseEagerly interprets and validates the Vendor List data up front, before returning it.
@@ -60,11 +59,11 @@ func mapifyPurpose(input []uint8) map[consentconstants.Purpose]struct{} {
 	return m
 }
 
-func mapifySpecialFeature(input []uint8) map[tcf2ConsentConstants.SpecialFeature]struct{} {
-	m := make(map[tcf2ConsentConstants.SpecialFeature]struct{}, len(input))
+func mapifySpecialFeature(input []uint8) map[consentconstants.SpecialFeature]struct{} {
+	m := make(map[consentconstants.SpecialFeature]struct{}, len(input))
 	var s struct{}
 	for _, value := range input {
-		m[tcf2ConsentConstants.SpecialFeature(value)] = s
+		m[consentconstants.SpecialFeature(value)] = s
 	}
 	return m
 }
@@ -91,7 +90,7 @@ type parsedVendor struct {
 	legitimateInterests map[consentconstants.Purpose]struct{}
 	flexiblePurposes    map[consentconstants.Purpose]struct{}
 	specialPurposes     map[consentconstants.Purpose]struct{}
-	specialFeatures     map[tcf2ConsentConstants.SpecialFeature]struct{}
+	specialFeatures     map[consentconstants.SpecialFeature]struct{}
 }
 
 func (l parsedVendor) Purpose(purposeID consentconstants.Purpose) (hasPurpose bool) {
@@ -133,7 +132,7 @@ func (l parsedVendor) SpecialPurpose(purposeID consentconstants.Purpose) (hasSpe
 }
 
 // SpecialFeature returns true if this vendor claims a need for the given special feature
-func (l parsedVendor) SpecialFeature(featureID tcf2ConsentConstants.SpecialFeature) (hasSpecialFeature bool) {
+func (l parsedVendor) SpecialFeature(featureID consentconstants.SpecialFeature) (hasSpecialFeature bool) {
 	_, hasSpecialFeature = l.specialFeatures[featureID]
 	return
 }

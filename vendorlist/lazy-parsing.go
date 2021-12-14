@@ -6,7 +6,6 @@ import (
 	"github.com/buger/jsonparser"
 	"github.com/prebid/go-gdpr/api"
 	"github.com/prebid/go-gdpr/consentconstants"
-	tcf2ConsentConstants "github.com/prebid/go-gdpr/consentconstants/tcf2"
 )
 
 // ParseLazily returns a view of the data which re-calculates things on each function call.
@@ -70,7 +69,7 @@ func (l lazyVendor) SpecialPurpose(purposeID consentconstants.Purpose) bool {
 }
 
 // V1 vendor list does not support special features.
-func (l lazyVendor) SpecialFeature(featureID tcf2ConsentConstants.SpecialFeature) bool {
+func (l lazyVendor) SpecialFeature(featureID consentconstants.SpecialFeature) bool {
 	return false
 }
 
