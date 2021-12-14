@@ -48,6 +48,10 @@ func vendorTester(parser func(data []byte) api.VendorList) func(*testing.T) {
 		assertBoolsEqual(t, true, v.SpecialPurpose(2))
 		assertBoolsEqual(t, false, v.SpecialPurpose(3)) // Does not exist yet
 
+		assertBoolsEqual(t, true, v.SpecialFeature(1))
+		assertBoolsEqual(t, true, v.SpecialFeature(2))
+		assertBoolsEqual(t, false, v.SpecialFeature(3)) // Does not exist yet
+
 		v = list.Vendor(80)
 		assertBoolsEqual(t, true, v.Purpose(1))
 		assertBoolsEqual(t, true, v.PurposeStrict(1))
@@ -69,9 +73,9 @@ func vendorTester(parser func(data []byte) api.VendorList) func(*testing.T) {
 		assertBoolsEqual(t, false, v.LegitimateInterest(3))
 		assertBoolsEqual(t, false, v.LegitimateInterestStrict(3))
 
-		assertBoolsEqual(t, false, v.SpecialPurpose(1))
-		assertBoolsEqual(t, false, v.SpecialPurpose(2))
-		assertBoolsEqual(t, false, v.SpecialPurpose(3)) // Does not exist yet
+		assertBoolsEqual(t, false, v.SpecialFeature(1))
+		assertBoolsEqual(t, false, v.SpecialFeature(2))
+		assertBoolsEqual(t, false, v.SpecialFeature(3)) // Does not exist yet
 	}
 
 }
@@ -91,7 +95,7 @@ const testData = `
 			"flexiblePurposes": [2, 9],
 			"specialPurposes": [1, 2],
 			"features": [1, 2],
-			"specialFeatures": [],
+			"specialFeatures": [1, 2],
 			"policyUrl": "https://www.emerse.com/privacy-policy/"
 		},
 		"80": {
