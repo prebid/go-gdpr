@@ -143,6 +143,12 @@ func (c ConsentMetadata) VendorListVersion() uint16 {
 	return binary.BigEndian.Uint16([]byte{leftByte, rightByte})
 }
 
+// TCFPolicyVersion returns the TCF policy version stored in bits 133 to 138
+func (c ConsentMetadata) TCFPolicyVersion() uint8 {
+	// Stored in bits 133-138.. which is [0000xxxx xx00000000] starting at the 17th byte
+	return uint8(((c.data[16] & 0x0f) << 2) | (c.data[17] & 0xc0) >> 6)
+}
+
 // MaxVendorID returns the maximum value for vendor identifier in bits 214 to 229
 func (c ConsentMetadata) MaxVendorID() uint16 {
 	// The max vendor ID is stored in bits 214 - 229

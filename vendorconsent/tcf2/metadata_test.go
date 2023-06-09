@@ -59,6 +59,65 @@ func TestLanguageExtremes(t *testing.T) {
 	assertStringsEqual(t, "SV", consent.ConsentLanguage())
 }
 
+func TestTCFPolicyVersion(t *testing.T) {
+	baseConsent := "CPtGDMAPtGDMALMAAAENA_C_AAAAAAAAACiQAAAAAAAA"
+	index := 22 // policy version is at the 23rd 6-bit base64 position
+	tests := []struct{
+		name string
+		base64Char  string
+		expected    uint8
+	}{
+		{
+			name: "char_A_bits_000000_is_version_0",
+			base64Char:  "A",
+			expected:    0,
+		},
+		{
+			name: "char_B_bits_000001_is_version_1",
+			base64Char:  "B",
+			expected:    1,
+		},
+		{
+			name: "char_C_bits_000010_is_version_2",
+			base64Char:  "C",
+			expected:    2,
+		},
+		{
+			name: "char_E_bits_000100_is_version_4",
+			base64Char:  "E",
+			expected:    4,
+		},
+		{
+			name: "char_I_bits_001000_is_version_8",
+			base64Char:  "I",
+			expected:    8,
+		},
+		{
+			name: "char_Q_bits_010000_is_version_16",
+			base64Char:  "Q",
+			expected:    16,
+		},
+		{
+			name: "char_g_bits_100000_is_version_32",
+			base64Char:  "g",
+			expected:    32,
+		},
+		{
+			name: "char_underscore_bits_111111_is_version_63",
+			base64Char:  "_",
+			expected:    63,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			updatedConsent := baseConsent[:index] + tt.base64Char + baseConsent[index+1:]
+			consent, err := Parse(decode(t, updatedConsent))
+			assertNilError(t, err)
+			assertUInt8sEqual(t, tt.expected, consent.TCFPolicyVersion())
+		})
+	}
+}
+
 func TestTCF2Fields(t *testing.T) {
 	baseConsent, err := Parse(decode(t, "COx3XOeOx3XOeLkAAAENAfCIAAAAAHgAAIAAAAAAAAAA"))
 	assertNilError(t, err)
