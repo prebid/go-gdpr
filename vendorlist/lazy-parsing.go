@@ -22,6 +22,13 @@ func ParseLazily(data []byte) api.VendorList {
 
 type lazyVendorList []byte
 
+func (l lazyVendorList) SpecVersion() uint16 {
+	if val, ok := lazyParseInt(l, "gvlSpecificationVersion"); ok {
+		return uint16(val)
+	}
+	return 0
+}
+
 func (l lazyVendorList) Version() uint16 {
 	if val, ok := lazyParseInt(l, "vendorListVersion"); ok {
 		return uint16(val)

@@ -15,6 +15,7 @@ func vendorListTester(parser func(data []byte) api.VendorList) func(*testing.T) 
 	return func(t *testing.T) {
 		list := parser([]byte(testData))
 		assertIntsEqual(t, 5, int(list.Version()))
+		assertIntsEqual(t, 0, int(list.SpecVersion()))
 		assertNil(t, list.Vendor(2), true)
 		assertNil(t, list.Vendor(32), false)
 	}

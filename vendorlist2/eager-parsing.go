@@ -27,6 +27,7 @@ func ParseEagerly(data []byte) (api.VendorList, error) {
 	}
 
 	parsedList := parsedVendorList{
+		specVersion: contract.GVLSpecificationVersion,
 		version: contract.Version,
 		vendors: make(map[uint16]parsedVendor, len(contract.Vendors)),
 	}
@@ -69,8 +70,13 @@ func mapifySpecialFeature(input []uint8) map[consentconstants.SpecialFeature]str
 }
 
 type parsedVendorList struct {
-	version uint16
-	vendors map[uint16]parsedVendor
+	specVersion uint16
+	version     uint16
+	vendors     map[uint16]parsedVendor
+}
+
+func (l parsedVendorList) SpecVersion() uint16 {
+	return l.specVersion
 }
 
 func (l parsedVendorList) Version() uint16 {
@@ -138,6 +144,7 @@ func (l parsedVendor) SpecialFeature(featureID consentconstants.SpecialFeature) 
 }
 
 type vendorListContract struct {
+	GVLSpecificationVersion uint16              `json:"gvlSpecificationVersion"`
 	Version uint16                              `json:"vendorListVersion"`
 	Vendors map[string]vendorListVendorContract `json:"vendors"`
 }
