@@ -39,6 +39,9 @@ type VendorConsents interface {
 	// The latest version can always be found at https://vendorlist.consensu.org/vendorlist.json
 	VendorListVersion() uint16
 
+	// TCFPolicyVersion indicates the TCF policy version needed to interpret this consent string.
+	TCFPolicyVersion() uint8
+
 	// MaxVendorID describes how many vendors are encoded into the string.
 	// This is the upper bound (inclusive) on valid inputs for HasConsent(id).
 	MaxVendorID() uint16
