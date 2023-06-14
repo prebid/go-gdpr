@@ -6,85 +6,67 @@ import (
 	"github.com/prebid/go-gdpr/api"
 )
 
-func AssertVendorlistCorrectness(t *testing.T, parser func(data []byte) api.VendorList) {
-	t.Run("TestVendorList", vendorListTester(parser))
-	t.Run("TestVendor", vendorTester(parser))
+func AssertVendorListCorrectness(t *testing.T, gvl api.VendorList) {
+	v := gvl.Vendor(8)
+	assertBoolsEqual(t, true, v.Purpose(1))
+	assertBoolsEqual(t, true, v.PurposeStrict(1))
+	assertBoolsEqual(t, true, v.Purpose(2))
+	assertBoolsEqual(t, false, v.PurposeStrict(2))
+	assertBoolsEqual(t, true, v.Purpose(3))
+	assertBoolsEqual(t, true, v.PurposeStrict(3))
+	assertBoolsEqual(t, true, v.Purpose(4))
+	assertBoolsEqual(t, true, v.PurposeStrict(4))
+	assertBoolsEqual(t, false, v.Purpose(5))
+	assertBoolsEqual(t, false, v.PurposeStrict(5))
+	assertBoolsEqual(t, false, v.Purpose(6))
+	assertBoolsEqual(t, false, v.PurposeStrict(6))
+
+	assertBoolsEqual(t, false, v.LegitimateInterest(1))
+	assertBoolsEqual(t, false, v.LegitimateInterestStrict(1))
+	assertBoolsEqual(t, true, v.LegitimateInterest(2))
+	assertBoolsEqual(t, true, v.LegitimateInterestStrict(2))
+	assertBoolsEqual(t, false, v.LegitimateInterest(3))
+	assertBoolsEqual(t, false, v.LegitimateInterestStrict(3))
+
+	assertBoolsEqual(t, true, v.SpecialPurpose(1))
+	assertBoolsEqual(t, true, v.SpecialPurpose(2))
+	assertBoolsEqual(t, false, v.SpecialPurpose(3)) // Does not exist yet
+
+	assertBoolsEqual(t, true, v.SpecialFeature(1))
+	assertBoolsEqual(t, true, v.SpecialFeature(2))
+	assertBoolsEqual(t, false, v.SpecialFeature(3)) // Does not exist yet
+
+	v = gvl.Vendor(80)
+	assertBoolsEqual(t, true, v.Purpose(1))
+	assertBoolsEqual(t, true, v.PurposeStrict(1))
+	assertBoolsEqual(t, true, v.Purpose(2))
+	assertBoolsEqual(t, true, v.PurposeStrict(2))
+	assertBoolsEqual(t, false, v.Purpose(3))
+	assertBoolsEqual(t, false, v.PurposeStrict(3))
+	assertBoolsEqual(t, true, v.Purpose(4))
+	assertBoolsEqual(t, true, v.PurposeStrict(4))
+	assertBoolsEqual(t, false, v.Purpose(5))
+	assertBoolsEqual(t, false, v.PurposeStrict(5))
+	assertBoolsEqual(t, false, v.Purpose(6))
+	assertBoolsEqual(t, false, v.PurposeStrict(6))
+
+	assertBoolsEqual(t, false, v.LegitimateInterest(1))
+	assertBoolsEqual(t, false, v.LegitimateInterestStrict(1))
+	assertBoolsEqual(t, true, v.LegitimateInterest(2))
+	assertBoolsEqual(t, false, v.LegitimateInterestStrict(2))
+	assertBoolsEqual(t, false, v.LegitimateInterest(3))
+	assertBoolsEqual(t, false, v.LegitimateInterestStrict(3))
+
+	assertBoolsEqual(t, false, v.SpecialPurpose(1))
+	assertBoolsEqual(t, false, v.SpecialPurpose(2))
+	assertBoolsEqual(t, false, v.SpecialPurpose(3)) // Does not exist yet
+	
+	assertBoolsEqual(t, false, v.SpecialFeature(1))
+	assertBoolsEqual(t, false, v.SpecialFeature(2))
+	assertBoolsEqual(t, false, v.SpecialFeature(3)) // Does not exist yet
 }
 
-func vendorListTester(parser func(data []byte) api.VendorList) func(*testing.T) {
-	return func(t *testing.T) {
-		list := parser([]byte(testData))
-		assertIntsEqual(t, 28, int(list.Version()))
-		assertNil(t, list.Vendor(2), true)
-		assertNil(t, list.Vendor(8), false)
-	}
-}
-
-func vendorTester(parser func(data []byte) api.VendorList) func(*testing.T) {
-	return func(t *testing.T) {
-		list := parser([]byte(testData))
-		v := list.Vendor(8)
-		assertBoolsEqual(t, true, v.Purpose(1))
-		assertBoolsEqual(t, true, v.PurposeStrict(1))
-		assertBoolsEqual(t, true, v.Purpose(2))
-		assertBoolsEqual(t, false, v.PurposeStrict(2))
-		assertBoolsEqual(t, true, v.Purpose(3))
-		assertBoolsEqual(t, true, v.PurposeStrict(3))
-		assertBoolsEqual(t, true, v.Purpose(4))
-		assertBoolsEqual(t, true, v.PurposeStrict(4))
-		assertBoolsEqual(t, false, v.Purpose(5))
-		assertBoolsEqual(t, false, v.PurposeStrict(5))
-		assertBoolsEqual(t, false, v.Purpose(6))
-		assertBoolsEqual(t, false, v.PurposeStrict(6))
-
-		assertBoolsEqual(t, false, v.LegitimateInterest(1))
-		assertBoolsEqual(t, false, v.LegitimateInterestStrict(1))
-		assertBoolsEqual(t, true, v.LegitimateInterest(2))
-		assertBoolsEqual(t, true, v.LegitimateInterestStrict(2))
-		assertBoolsEqual(t, false, v.LegitimateInterest(3))
-		assertBoolsEqual(t, false, v.LegitimateInterestStrict(3))
-
-		assertBoolsEqual(t, true, v.SpecialPurpose(1))
-		assertBoolsEqual(t, true, v.SpecialPurpose(2))
-		assertBoolsEqual(t, false, v.SpecialPurpose(3)) // Does not exist yet
-
-		assertBoolsEqual(t, true, v.SpecialFeature(1))
-		assertBoolsEqual(t, true, v.SpecialFeature(2))
-		assertBoolsEqual(t, false, v.SpecialFeature(3)) // Does not exist yet
-
-		v = list.Vendor(80)
-		assertBoolsEqual(t, true, v.Purpose(1))
-		assertBoolsEqual(t, true, v.PurposeStrict(1))
-		assertBoolsEqual(t, true, v.Purpose(2))
-		assertBoolsEqual(t, true, v.PurposeStrict(2))
-		assertBoolsEqual(t, false, v.Purpose(3))
-		assertBoolsEqual(t, false, v.PurposeStrict(3))
-		assertBoolsEqual(t, true, v.Purpose(4))
-		assertBoolsEqual(t, true, v.PurposeStrict(4))
-		assertBoolsEqual(t, false, v.Purpose(5))
-		assertBoolsEqual(t, false, v.PurposeStrict(5))
-		assertBoolsEqual(t, false, v.Purpose(6))
-		assertBoolsEqual(t, false, v.PurposeStrict(6))
-
-		assertBoolsEqual(t, false, v.LegitimateInterest(1))
-		assertBoolsEqual(t, false, v.LegitimateInterestStrict(1))
-		assertBoolsEqual(t, true, v.LegitimateInterest(2))
-		assertBoolsEqual(t, false, v.LegitimateInterestStrict(2))
-		assertBoolsEqual(t, false, v.LegitimateInterest(3))
-		assertBoolsEqual(t, false, v.LegitimateInterestStrict(3))
-
-		assertBoolsEqual(t, false, v.SpecialPurpose(1))
-		assertBoolsEqual(t, false, v.SpecialPurpose(2))
-		assertBoolsEqual(t, false, v.SpecialPurpose(3)) // Does not exist yet
-		
-		assertBoolsEqual(t, false, v.SpecialFeature(1))
-		assertBoolsEqual(t, false, v.SpecialFeature(2))
-		assertBoolsEqual(t, false, v.SpecialFeature(3)) // Does not exist yet
-	}
-
-}
-
-const testData = `
+const testDataSpecVersion2 = `
 {
 	"gvlSpecificationVersion": 2,
 	"vendorListVersion": 28,
@@ -114,6 +96,93 @@ const testData = `
 			"policyUrl": "https://platform-cdn.sharethrough.com/privacy-policy"
 		}
 	}
+}
+`
+
+const testDataSpecVersion2Empty = `
+{
+	"gvlSpecificationVersion": 2,
+	"vendorListVersion": 28,
+	"tcfPolicyVersion": 2,
+	"lastUpdated": "2020-03-05T16:05:29Z",
+	"vendors": { }
+}
+`
+
+const testDataSpecVersion3 = `
+{
+	"gvlSpecificationVersion": 3,
+	"vendorListVersion": 1,
+	"tcfPolicyVersion": 4,
+	"lastUpdated": "2023-05-18T16:07:14Z",
+	"vendors": {
+		"8": {
+			"id": 8,
+			"name": "Emerse Sverige AB",
+			"purposes": [1, 3, 4],
+			"legIntPurposes": [2, 7, 8, 9],
+			"flexiblePurposes": [2, 9],
+			"specialPurposes": [1, 2],
+			"features": [1, 2],
+			"specialFeatures": [1, 2],
+			"dataRetention": {
+				"stdRetention": 30,
+				"purposes": { "9": 180 },
+				"specialPurposes": {}
+			},
+		   "dataDeclaration" : [ 1, 2, 4, 6 ],
+		   "urls": [
+			  {
+				"langId": "en",
+				"privacy": "https://vendorname.com/gdpr.html",
+				"legIntClaim": "https://vendorname.com/gdpr.html#li"
+			  },
+			  {
+				"langId": "fr",
+				"privacy": "https://vendorname.com/fr/gdpr.html",
+				"legIntClaim": "https://vendorname.com/fr/gdpr.html#li"
+			  }
+		   ]
+		},
+		"80": {
+			"id": 80,
+			"name": "Sharethrough, Inc",
+			"purposes": [1, 2, 4, 7, 9, 10],
+			"legIntPurposes": [],
+			"flexiblePurposes": [2, 4, 7, 9, 10],
+			"specialPurposes": [],
+			"features": [],
+			"specialFeatures": [],
+			"dataRetention": {
+				"stdRetention": 30,
+				"purposes": { "9": 180 },
+				"specialPurposes": {}
+			},
+		   "dataDeclaration" : [ 1, 2, 4, 6 ],
+		   "urls": [
+			  {
+				"langId": "en",
+				"privacy": "https://vendorname.com/gdpr.html",
+				"legIntClaim": "https://vendorname.com/gdpr.html#li"
+			  },
+			  {
+				"langId": "fr",
+				"privacy": "https://vendorname.com/fr/gdpr.html",
+				"legIntClaim": "https://vendorname.com/fr/gdpr.html#li"
+			  }
+		   ]
+		}
+	}
+}
+`
+
+const testDataSpecVersion3Empty = `
+{
+	"gvlSpecificationVersion": 3,
+	"vendorListVersion": 1,
+	"tcfPolicyVersion": 4,
+	"lastUpdated": "2023-05-18T16:07:14Z",
+	"vendors": { }
 }
 `
 
