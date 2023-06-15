@@ -12,8 +12,8 @@ import (
 // The returned object can be shared safely between goroutines.
 //
 // This is ideal if:
-//   1. You only need to look up a few vendors or purpose IDs
-//   2. You don't need good errors on malformed input
+//  1. You only need to look up a few vendors or purpose IDs
+//  2. You don't need good errors on malformed input
 //
 // Otherwise, you may get better performance with ParseEagerly.
 func ParseLazily(data []byte) api.VendorList {

@@ -3,33 +3,72 @@ package vendorlist2
 import (
 	"testing"
 
-	"github.com/prebid/go-gdpr/api"
 	"github.com/stretchr/testify/assert"
 )
 
-func TestEagerlyParsedVendorList(t *testing.T) {
-	AssertVendorlistCorrectness(t, func(data []byte) api.VendorList {
-		vendorList, err := ParseEagerly(data)
-		if err != nil {
-			t.Errorf("ParseEagerly returned an unexpected error: %v", err)
-		}
-		return vendorList
-	})
+func TestParseEagerlyVendorList(t *testing.T) {
+	tests := []struct {
+		name                  string
+		vendorList            string
+		vendorListSpecVersion uint16
+		vendorListVersion     uint16
+	}{
+		{
+			name:                  "vendor_list_spec_2",
+			vendorList:            testDataSpecVersion2,
+			vendorListSpecVersion: 2,
+			vendorListVersion:     28,
+		},
+		{
+			name:                  "vendor_list_spec_3",
+			vendorList:            testDataSpecVersion3,
+			vendorListSpecVersion: 3,
+			vendorListVersion:     1,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			parsedGVL, err := ParseEagerly([]byte(tt.vendorList))
+			assert.NoError(t, err)
+			assert.Equal(t, tt.vendorListSpecVersion, parsedGVL.SpecVersion())
+			assert.Equal(t, tt.vendorListVersion, parsedGVL.Version())
+			assert.NotNil(t, parsedGVL.Vendor(8))
+			assert.NotNil(t, parsedGVL.Vendor(80))
+			AssertVendorListCorrectness(t, parsedGVL)
+		})
+	}
 }
 
-func TestParseEagerlyVendorsEmpty(t *testing.T) {
-	vendorListJSON := `
-{
-	"gvlSpecificationVersion": 2,
-	"vendorListVersion": 28,
-	"tcfPolicyVersion": 2,
-	"lastUpdated": "2020-03-05T16:05:29Z",
-	"vendors": { }
-}
-`
-	vendorList, err := ParseEagerly([]byte(vendorListJSON))
+func TestParseEagerlyEmptyVendorList(t *testing.T) {
+	tests := []struct {
+		name                  string
+		vendorList            string
+		vendorListSpecVersion uint16
+		vendorListVersion     uint16
+	}{
+		{
+			name:                  "vendor_list_spec_2",
+			vendorList:            testDataSpecVersion2Empty,
+			vendorListSpecVersion: 2,
+			vendorListVersion:     28,
+		},
+		{
+			name:                  "vendor_list_spec_3",
+			vendorList:            testDataSpecVersion3Empty,
+			vendorListSpecVersion: 3,
+			vendorListVersion:     1,
+		},
+	}
 
-	assert.NoError(t, err)
-	assert.Equal(t, vendorList.Version(), uint16(28))
-	assert.Nil(t, vendorList.Vendor(0))
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			parsedGVL, err := ParseEagerly([]byte(tt.vendorList))
+			assert.NoError(t, err)
+			assert.Equal(t, tt.vendorListSpecVersion, parsedGVL.SpecVersion())
+			assert.Equal(t, tt.vendorListVersion, parsedGVL.Version())
+			assert.Nil(t, parsedGVL.Vendor(8))
+			assert.Nil(t, parsedGVL.Vendor(80))
+		})
+	}
 }

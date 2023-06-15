@@ -113,6 +113,11 @@ func (c consentMetadata) VendorListVersion() uint16 {
 	return binary.BigEndian.Uint16([]byte{leftByte, rightByte})
 }
 
+// TCFPolicyVersion is not implemented in TCF1
+func (c consentMetadata) TCFPolicyVersion() uint8 {
+	return 0
+}
+
 func (c consentMetadata) MaxVendorID() uint16 {
 	// The max vendor ID is stored in bits 156 - 171
 	leftByte := byte((c[19]&0x0f)<<4 + (c[20]&0xf0)>>4)
