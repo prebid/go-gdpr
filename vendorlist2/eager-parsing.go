@@ -12,8 +12,8 @@ import (
 // The returned object can be shared safely between goroutines.
 //
 // This is ideal if:
-//   1. You plan to call functions on the returned VendorList many times before discarding it.
-//   2. You need strong input validation and good error messages.
+//  1. You plan to call functions on the returned VendorList many times before discarding it.
+//  2. You need strong input validation and good error messages.
 //
 // Otherwise, you may get better performance with ParseLazily.
 func ParseEagerly(data []byte) (api.VendorList, error) {
@@ -27,8 +27,9 @@ func ParseEagerly(data []byte) (api.VendorList, error) {
 	}
 
 	parsedList := parsedVendorList{
-		version: contract.Version,
-		vendors: make(map[uint16]parsedVendor, len(contract.Vendors)),
+		specVersion: contract.GVLSpecificationVersion,
+		version:     contract.Version,
+		vendors:     make(map[uint16]parsedVendor, len(contract.Vendors)),
 	}
 
 	for _, v := range contract.Vendors {
@@ -69,8 +70,13 @@ func mapifySpecialFeature(input []uint8) map[consentconstants.SpecialFeature]str
 }
 
 type parsedVendorList struct {
-	version uint16
-	vendors map[uint16]parsedVendor
+	specVersion uint16
+	version     uint16
+	vendors     map[uint16]parsedVendor
+}
+
+func (l parsedVendorList) SpecVersion() uint16 {
+	return l.specVersion
 }
 
 func (l parsedVendorList) Version() uint16 {
@@ -138,8 +144,9 @@ func (l parsedVendor) SpecialFeature(featureID consentconstants.SpecialFeature) 
 }
 
 type vendorListContract struct {
-	Version uint16                              `json:"vendorListVersion"`
-	Vendors map[string]vendorListVendorContract `json:"vendors"`
+	GVLSpecificationVersion uint16                              `json:"gvlSpecificationVersion"`
+	Version                 uint16                              `json:"vendorListVersion"`
+	Vendors                 map[string]vendorListVendorContract `json:"vendors"`
 }
 
 type vendorListVendorContract struct {

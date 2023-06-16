@@ -5,6 +5,9 @@ import "github.com/prebid/go-gdpr/consentconstants"
 // VendorList is an interface used to fetch information about an IAB Global Vendor list.
 // For the latest version, see: https://vendorlist.consensu.org/vendorlist.json
 type VendorList interface {
+	// SpecVersion returns the version of the global vendor list specification the list adheres to
+	SpecVersion() uint16
+
 	// Version returns the version of the vendor list which this is.
 	//
 	// If the input was malformed, this will return 0.

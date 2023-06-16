@@ -60,7 +60,7 @@ func AssertVendorListCorrectness(t *testing.T, gvl api.VendorList) {
 	assertBoolsEqual(t, false, v.SpecialPurpose(1))
 	assertBoolsEqual(t, false, v.SpecialPurpose(2))
 	assertBoolsEqual(t, false, v.SpecialPurpose(3)) // Does not exist yet
-	
+
 	assertBoolsEqual(t, false, v.SpecialFeature(1))
 	assertBoolsEqual(t, false, v.SpecialFeature(2))
 	assertBoolsEqual(t, false, v.SpecialFeature(3)) // Does not exist yet
