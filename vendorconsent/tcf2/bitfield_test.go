@@ -31,3 +31,12 @@ func TestBitField(t *testing.T) {
 		assertBoolsEqual(t, ok, consent.VendorConsent(i))
 	}
 }
+
+func TestParseBitFieldRounding(t *testing.T) {
+	// crafted metadata to have 232 bits of data
+	data := make([]byte, 29)
+	metadata := ConsentMetadata{data: data}
+	// having 3 vendors with 230 bits of header should require 30 bytes of data (233 bits rounded to upper byte)
+	_, _, err := parseBitField(metadata, 3, 230)
+	assertError(t, err)
+}

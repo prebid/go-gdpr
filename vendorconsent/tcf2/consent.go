@@ -2,6 +2,7 @@ package vendorconsent
 
 import (
 	"encoding/base64"
+	"fmt"
 	"strings"
 
 	"github.com/prebid/go-gdpr/api"
@@ -49,6 +50,7 @@ func Parse(data []byte) (api.VendorConsents, error) {
 	var legitIntStart uint
 	var pubRestrictsStart uint
 	// Bit 229 determines whether or not the consent string encodes Vendor data in a RangeSection or BitField.
+	// We know from parseMetadata that we have at least 29*8=232 bits available
 	if isSet(data, 229) {
 		vendorConsents, legitIntStart, err = parseRangeSection(metadata, metadata.MaxVendorID(), 230)
 	} else {
@@ -65,6 +67,9 @@ func Parse(data []byte) (api.VendorConsents, error) {
 		return nil, err
 	}
 
+	if legitIntStart+16 >= uint(len(data))*8 {
+		return nil, fmt.Errorf("invalid consent data: no legitimate interest start position")
+	}
 	if isSet(data, legitIntStart+16) {
 		vendorLegitInts, pubRestrictsStart, err = parseRangeSection(metadata, legIntMaxVend, metadata.vendorLegitimateInterestStart)
 	} else {
