@@ -33,6 +33,12 @@ func assertNilError(t *testing.T, err error) {
 	}
 }
 
+func assertError(t *testing.T, err error) {
+	if err == nil {
+		t.Fatal("Expected error but got none")
+	}
+}
+
 func assertStringsEqual(t *testing.T, expected string, actual string) {
 	t.Helper()
 	if actual != expected {
