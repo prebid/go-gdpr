@@ -9,9 +9,7 @@ import (
 	"github.com/prebid/go-gdpr/consentconstants"
 )
 
-var (
-	errInvalidVendorListVersion = errors.New("the consent string encoded a VendorListVersion of 0, but this value must be greater than or equal to 1")
-)
+var errInvalidVendorListVersion = errors.New("the consent string encoded a VendorListVersion of 0, but this value must be greater than or equal to 1")
 
 // parseMetadata parses the metadata from the consent string.
 // This returns an error if the input is too short to answer questions about that data.
@@ -44,6 +42,7 @@ type ConsentMetadata struct {
 	pubRestrictionsStart          uint
 	vendorConsents                vendorConsentsResolver
 	vendorLegitimateInterests     vendorConsentsResolver
+	disclosedVendors              vendorConsentsResolver
 	publisherRestrictions         pubRestrictResolver
 }
 
@@ -146,7 +145,7 @@ func (c ConsentMetadata) VendorListVersion() uint16 {
 // TCFPolicyVersion returns the TCF policy version stored in bits 133 to 138
 func (c ConsentMetadata) TCFPolicyVersion() uint8 {
 	// Stored in bits 133-138.. which is [0000xxxx xx00000000] starting at the 17th byte
-	return uint8(((c.data[16] & 0x0f) << 2) | (c.data[17] & 0xc0) >> 6)
+	return uint8(((c.data[16] & 0x0f) << 2) | (c.data[17]&0xc0)>>6)
 }
 
 // MaxVendorID returns the maximum value for vendor identifier in bits 214 to 229
@@ -210,4 +209,11 @@ func isSet(data []byte, bitIndex uint) bool {
 	byteIndex := bitIndex / 8
 	bitOffset := bitIndex % 8
 	return byteToBool(data[byteIndex] & (0x80 >> bitOffset))
+}
+
+func (c ConsentMetadata) VendorDisclosed(id uint16) bool {
+	if c.disclosedVendors == nil {
+		return false
+	}
+	return c.disclosedVendors.VendorConsent(id)
 }

@@ -13,7 +13,7 @@ func vendorTcfV2Allowed(consentStr string) bool {
 	if err != nil {
 		return false
 	}
-	consent := baseConsent.(ConsentMetadata)
+	consent := baseConsent.(*ConsentMetadata)
 	return consent.VendorConsent(15) &&
 		consent.VendorLegitInterest(15) &&
 		consent.PurposeAllowed(consentconstants.Purpose(1)) &&

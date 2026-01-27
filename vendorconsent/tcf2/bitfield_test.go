@@ -33,7 +33,7 @@ func TestBitField(t *testing.T) {
 }
 
 func TestParseBitFieldRounding(t *testing.T) {
-	// crafted data to have 232 bits of data
+	// crafted data to have 232 bits
 	data := make([]byte, 29)
 	// having 3 vendors with 230 bits of header should require 30 bytes of data (233 bits rounded to upper byte)
 	_, _, err := parseBitField(data, 3, 230)

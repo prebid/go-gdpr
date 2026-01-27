@@ -7,7 +7,7 @@ import (
 func TestPubRestrictions(t *testing.T) {
 	baseConsent, err := Parse(decode(t, "COwAdDhOwAdDhN4ABAENAPCgAAQAAv___wAAAFP_AAp_4AI6ACACAA"))
 	assertNilError(t, err)
-	consent := baseConsent.(ConsentMetadata)
+	consent := baseConsent.(*ConsentMetadata)
 	// Extra random verification to ensure the basics are solid
 	assertUInt8sEqual(t, 2, consent.Version())
 	assertUInt16sEqual(t, 888, consent.CmpID())
@@ -28,7 +28,7 @@ func TestPubRestrictions(t *testing.T) {
 func TestPubRestrictions2(t *testing.T) {
 	baseConsent, err := Parse(decode(t, "COxPe2TOxPe2TALABAENAPCgAAAAAAAAAAAAAFAAAAoAAA4IACACAIABgACAFA4ADACAAIygAGADwAQBIAIAIB0AEAEBSACACAA"))
 	assertNilError(t, err)
-	consent := baseConsent.(ConsentMetadata)
+	consent := baseConsent.(*ConsentMetadata)
 
 	assertBoolsEqual(t, false, consent.PurposeOneTreatment())
 	assertBoolsEqual(t, false, consent.SpecialFeatureOptIn(3))
