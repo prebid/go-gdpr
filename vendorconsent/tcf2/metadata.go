@@ -45,6 +45,7 @@ type ConsentMetadata struct {
 	vendorConsents                vendorConsentsResolver
 	vendorLegitimateInterests     vendorConsentsResolver
 	publisherRestrictions         pubRestrictResolver
+	disclosedVendors              vendorConsentsResolver
 }
 
 type vendorConsentsResolver interface {
@@ -203,6 +204,22 @@ func (c ConsentMetadata) VendorLegitInterest(id uint16) bool {
 // CheckPubRestriction returns the publisher restriction for a given purpose id, restriction type and vendor id
 func (c ConsentMetadata) CheckPubRestriction(purposeID uint8, restrictType uint8, vendor uint16) bool {
 	return c.publisherRestrictions.CheckPubRestriction(purposeID, restrictType, vendor)
+}
+
+// MaxDisclosedVendorID returns the maximum Vendor ID in the Disclosed Vendors segment.
+func (c ConsentMetadata) MaxDisclosedVendorID() uint16 {
+	if c.disclosedVendors == nil {
+		return 0
+	}
+	return c.disclosedVendors.MaxVendorID()
+}
+
+// DisclosedVendor returns true if the given vendor was disclosed to the user.
+func (c ConsentMetadata) DisclosedVendor(id uint16) bool {
+	if c.disclosedVendors == nil {
+		return false
+	}
+	return c.disclosedVendors.VendorConsent(id)
 }
 
 // Returns true if the bitIndex'th bit in data is a 1, and false if it's a 0.

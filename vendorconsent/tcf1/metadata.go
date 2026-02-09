@@ -38,6 +38,16 @@ func parseMetadata(data []byte) (consentMetadata, error) {
 // to make sure that functions on it don't overflow the bounds of the byte array.
 type consentMetadata []byte
 
+// MaxDisclosedVendorID returns 0 for TCF 1.x strings (no Disclosed Vendors segment).
+func (c consentMetadata) MaxDisclosedVendorID() uint16 {
+	return 0
+}
+
+// DisclosedVendor returns false for TCF 1.x strings (no Disclosed Vendors segment).
+func (c consentMetadata) DisclosedVendor(id uint16) bool {
+	return false
+}
+
 func (c consentMetadata) Version() uint8 {
 	// Stored in bits 0-5
 	return uint8(c[0] >> 2)
