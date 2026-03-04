@@ -64,3 +64,22 @@ func TestLanguageExtremes(t *testing.T) {
 	assertNilError(t, err)
 	assertStringsEqual(t, "ZA", consent.ConsentLanguage())
 }
+
+func TestVendorDisclosed(t *testing.T) {
+	consent, err := Parse(decode(t, "BOOG4uyOOG4uyABFZBAAABAAAAAAEA"))
+	assertNilError(t, err)
+	assertBoolsEqual(t, false, consent.VendorDisclosed(1))
+	assertBoolsEqual(t, false, consent.VendorDisclosed(100))
+}
+
+func TestVendorDisclosedMaxVendorID(t *testing.T) {
+	consent, err := Parse(decode(t, "BOOG4uyOOG4uyABFZBAAABAAAAAAEA"))
+	assertNilError(t, err)
+	assertUInt16sEqual(t, 0, consent.VendorDisclosedMaxVendorID())
+}
+
+func TestHasDisclosedVendors(t *testing.T) {
+	consent, err := Parse(decode(t, "BOOG4uyOOG4uyABFZBAAABAAAAAAEA"))
+	assertNilError(t, err)
+	assertBoolsEqual(t, false, consent.HasDisclosedVendors())
+}

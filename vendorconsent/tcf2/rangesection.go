@@ -9,8 +9,10 @@ import (
 func parseRangeSection(metadata ConsentMetadata, maxVendorID uint16, startbit uint) (*rangeSection, uint, error) {
 	data := metadata.data
 
-	if len(data) < 31 {
-		return nil, 0, fmt.Errorf("vendor consent strings using RangeSections require at least 31 bytes. Got %d", len(data))
+	// Check we have enough bytes to read the NumEntries field (12 bits starting at startbit)
+	minBytesRequired := (startbit + 12 + 7) / 8
+	if uint(len(data)) < minBytesRequired {
+		return nil, 0, fmt.Errorf("vendor consent strings using RangeSections require at least %d bytes to read NumEntries. Got %d", minBytesRequired, len(data))
 	}
 
 	// This makes an int from bits [startBit, startBit + 12)

@@ -45,6 +45,8 @@ type ConsentMetadata struct {
 	vendorConsents                vendorConsentsResolver
 	vendorLegitimateInterests     vendorConsentsResolver
 	publisherRestrictions         pubRestrictResolver
+	disclosedVendors              vendorConsentsResolver // TCF 2.3: Disclosed Vendors segment
+	hasDisclosedVendors           bool                   // TCF 2.3: whether the Disclosed Vendors segment was present
 }
 
 type vendorConsentsResolver interface {
@@ -146,7 +148,7 @@ func (c ConsentMetadata) VendorListVersion() uint16 {
 // TCFPolicyVersion returns the TCF policy version stored in bits 133 to 138
 func (c ConsentMetadata) TCFPolicyVersion() uint8 {
 	// Stored in bits 133-138.. which is [0000xxxx xx00000000] starting at the 17th byte
-	return uint8(((c.data[16] & 0x0f) << 2) | (c.data[17] & 0xc0) >> 6)
+	return uint8(((c.data[16] & 0x0f) << 2) | (c.data[17]&0xc0)>>6)
 }
 
 // MaxVendorID returns the maximum value for vendor identifier in bits 214 to 229
@@ -203,6 +205,29 @@ func (c ConsentMetadata) VendorLegitInterest(id uint16) bool {
 // CheckPubRestriction returns the publisher restriction for a given purpose id, restriction type and vendor id
 func (c ConsentMetadata) CheckPubRestriction(purposeID uint8, restrictType uint8, vendor uint16) bool {
 	return c.publisherRestrictions.CheckPubRestriction(purposeID, restrictType, vendor)
+}
+
+// VendorDisclosed returns true if the vendor was disclosed to the user (TCF 2.3).
+// For backward compatibility with TCF 2.0/2.2 strings without disclosed vendors segment,
+// returns false when no disclosed vendors data is available.
+func (c ConsentMetadata) VendorDisclosed(id uint16) bool {
+	if c.disclosedVendors == nil {
+		return false
+	}
+	return c.disclosedVendors.VendorConsent(id)
+}
+
+// VendorDisclosedMaxVendorID returns the maximum vendor ID in the disclosed vendors segment (TCF 2.3).
+func (c ConsentMetadata) VendorDisclosedMaxVendorID() uint16 {
+	if c.disclosedVendors == nil {
+		return 0
+	}
+	return c.disclosedVendors.MaxVendorID()
+}
+
+// HasDisclosedVendors returns true if the consent string includes a disclosedVendors segment.
+func (c ConsentMetadata) HasDisclosedVendors() bool {
+	return c.hasDisclosedVendors
 }
 
 // Returns true if the bitIndex'th bit in data is a 1, and false if it's a 0.

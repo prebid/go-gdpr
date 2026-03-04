@@ -131,6 +131,19 @@ func (c consentMetadata) PurposeAllowed(id consentconstants.Purpose) bool {
 	return isSet(c, uint(id)+131)
 }
 
+// VendorDisclosed always returns false for TCF1 (disclosed vendors is a TCF 2.3 feature).
+func (c consentMetadata) VendorDisclosed(id uint16) bool {
+	return false
+}
+
+func (c consentMetadata) VendorDisclosedMaxVendorID() uint16 {
+	return 0
+}
+
+func (c consentMetadata) HasDisclosedVendors() bool {
+	return false
+}
+
 // Returns true if the bitIndex'th bit in data is a 1, and false if it's a 0.
 func isSet(data []byte, bitIndex uint) bool {
 	byteIndex := bitIndex / 8

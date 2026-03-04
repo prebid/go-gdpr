@@ -61,4 +61,26 @@ type VendorConsents interface {
 	// It is the caller's responsibility to get the right Vendor List version for the semantics of the ID.
 	// For more information, see VendorListVersion().
 	VendorConsent(id uint16) bool
+
+	// VendorDisclosed determines if a given vendor was disclosed to the user.
+	// This is mandatory in TCF 2.3 and is used to verify that vendors (especially those
+	// declaring only Special Purposes) were actually presented to the user.
+	// Mandatory Inclusion: All TC Strings created on or after February 28, 2026, must include the disclosedVendors segment.
+	// Source https://iabeurope.eu/all-you-need-to-know-about-the-transition-to-tcf-v2-3/#:~:text=Any%20TC%20String%20created%20without,TC%20String%20created%20under%202.3.
+	//
+	// For TCF 2.2 strings that don't include a DisclosedVendors segment,
+	// this returns false to maintain backward compatibility.
+	VendorDisclosed(id uint16) bool
+
+	VendorDisclosedMaxVendorID() uint16
+
+	// HasDisclosedVendors returns true if the consent string includes a disclosedVendors segment.
+	// This method is particularly useful during the TCF 2.3 transition phase (mandatory from March 1st, 2025)
+	// to distinguish between:
+	//   - Legacy TCF 2.0/2.2 consent strings that legitimately don't have this segment (returns false)
+	//   - TCF 2.3+ consent strings that should have this segment (returns true if present, false if malformed)
+	//
+	// Note: VendorDisclosed(id) returns false both when the segment is missing AND when
+	// a vendor is not disclosed, so use HasDisclosedVendors() to disambiguate these cases.
+	HasDisclosedVendors() bool
 }

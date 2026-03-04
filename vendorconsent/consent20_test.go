@@ -47,10 +47,10 @@ func TestInvalidConsentStrings20(t *testing.T) {
 	assertInvalid20(t, "CONciguONcjGKADACHENAACIAC0ta__AACiQABgAAYA", "the consent string encoded a VendorListVersion of 0, but this value must be greater than or equal to 1")
 
 	// Bad BitFields
-	assertInvalid20(t, "CONciguONcjGKADACHENAOCIAC0ta__AACiQAeAA", "a BitField for 60 vendors requires a consent string of 36 bytes. This consent string had 30")
+	assertInvalid20(t, "CONciguONcjGKADACHENAOCIAC0ta__AACiQAeAA", "a BitField for 60 vendors requires a consent string of 37 bytes. This consent string had 30")
 
 	// Bad RangeSections
-	assertInvalid20(t, "CONciguONcjGKADACHENAOCIAC0ta__AACiQABwA", "vendor consent strings using RangeSections require at least 31 bytes. Got 30")                             // This encodes 184 bits
+	assertInvalid20(t, "CONciguONcjGKADACHENAOCIAC0ta__AACiQABwA", "vendor consent strings using RangeSections require at least 31 bytes to read NumEntries. Got 30")          // This encodes 184 bits
 	assertInvalid20(t, "CONciguONcjGKADACHENAOCIAC0ta__AACiQABwAQQ", "ParseUInt16 expected a 16-bit int to start at bit 243, but the consent string was only 31 bytes long")   // 1 single vendor, too few bits
 	assertInvalid20(t, "CONciguONcjGKADACHENAOCIAC0ta__AACiQABwAYQAC", "ParseUInt16 expected a 16-bit int to start at bit 259, but the consent string was only 33 bytes long") // 1 vendor range, too few bits
 	assertInvalid20(t, "CONciguONcjGKADACHENAOCIAC0ta__AACiQABwAgABA", "ParseUInt16 expected a 16-bit int to start at bit 260, but the consent string was only 33 bytes long") // 2 single vendors, too few bits

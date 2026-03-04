@@ -15,28 +15,30 @@ const (
 	consentStringTCF2Prefix    = 'C'
 )
 
+// Segment types defined in TCF 2.x specification.
+// https://github.com/InteractiveAdvertisingBureau/GDPR-Transparency-and-Consent-Framework/blob/master/TCFv2/IAB%20Tech%20Lab%20-%20Consent%20string%20and%20vendor%20list%20formats%20v2.md#publisher-purposes-transparency-and-consent
+// Only `SegmentTypeDisclosedVendors` is used in this file, but all types are included for specification completeness.
+const (
+	SegmentTypeCoreString       = 0
+	SegmentTypeDisclosedVendors = 1
+	SegmentTypePublisherTC      = 3
+)
+
 // ParseString parses the TCF 2.0 vendor string base64 encoded
 func ParseString(consent string) (api.VendorConsents, error) {
 	if consent == "" {
 		return nil, consentconstants.ErrEmptyDecodedConsent
 	}
-	// split TCF 2.0 segments
-	if index := strings.IndexByte(consent, consentStringTCF2Separator); index != -1 {
-		consent = consent[:index]
-	}
 
-	buff := []byte(consent)
-	decoded := buff
-	n, err := base64.RawURLEncoding.Decode(decoded, buff)
+	consentMeta, err := parseCoreAndDisclosedVendors(consent)
 	if err != nil {
 		return nil, err
 	}
-	decoded = decoded[:n:n]
 
-	return Parse(decoded)
+	return consentMeta, nil
 }
 
-// Parse parses the TCF 2.0 vendor consent data from the string. This string should *not* be encoded (by base64 or any other encoding).
+// Parse parses the TCF 2.0 "Core string" segment. This string should *not* be encoded (by base64 or any other encoding).
 // If the data is malformed and cannot be interpreted as a vendor consent string, this will return an error.
 func Parse(data []byte) (api.VendorConsents, error) {
 	metadata, err := parseMetadata(data)
@@ -90,10 +92,85 @@ func Parse(data []byte) (api.VendorConsents, error) {
 	metadata.publisherRestrictions = pubRestrictions
 
 	return metadata, err
+}
 
+func parseCoreAndDisclosedVendors(consent string) (ConsentMetadata, error) {
+	// Split TCF 2.0 segments by '.'
+	// Format: [Core String].[Disclosed Vendors].[Publisher TC]
+	segments := strings.Split(consent, string(consentStringTCF2Separator))
+
+	// Parse the core string (always first segment)
+	coreSegmentDecoded, err := decodeSegment(segments[0])
+	if err != nil {
+		return ConsentMetadata{}, err
+	}
+
+	// Parse the core string
+	result, err := Parse(coreSegmentDecoded)
+	if err != nil {
+		return ConsentMetadata{}, err
+	}
+
+	metadata := result.(ConsentMetadata)
+
+	// Parse disclosed vendors segment if present (TCF 2.3+)
+	// Iterate through segments to find disclosed vendors by type (segments after Core String segment can be in any order)
+	for _, segment := range segments[1:] {
+		if segment == "" {
+			continue
+		}
+
+		decoded, err := decodeSegment(segment)
+		if err != nil {
+			return ConsentMetadata{}, err
+		}
+
+		segmentType, err := getSegmentType(decoded)
+		if err != nil {
+			return ConsentMetadata{}, err
+		}
+
+		if segmentType == SegmentTypeDisclosedVendors { // Disclosed Vendors segment
+			disclosedVendors, err := parseDisclosedVendorsSegment(decoded)
+			if err != nil {
+				return ConsentMetadata{}, fmt.Errorf("failed to parse disclosed vendors segment: %v", err)
+			}
+			metadata.disclosedVendors = disclosedVendors
+			metadata.hasDisclosedVendors = true
+			break
+		}
+	}
+
+	return metadata, nil
 }
 
 // IsConsentV2 return true if the consent strings looks like a tcf v2 consent string
 func IsConsentV2(consent string) bool {
 	return len(consent) > 0 && consent[0] == consentStringTCF2Prefix
+}
+
+// decodeSegment decodes a base64 encoded segment string.
+func decodeSegment(segmentString string) ([]byte, error) {
+	if segmentString == "" {
+		return nil, fmt.Errorf("empty segment string")
+	}
+
+	buff := []byte(segmentString)
+	decoded := buff
+	n, err := base64.RawURLEncoding.Decode(decoded, buff)
+	if err != nil {
+		return nil, fmt.Errorf("failed to decode segment: %v", err)
+	}
+
+	return decoded[:n:n], nil
+}
+
+// getSegmentType extracts the 3-bit segment type from the segment data
+func getSegmentType(data []byte) (uint8, error) {
+	if len(data) < 1 {
+		return 0, fmt.Errorf("segment too short")
+	}
+
+	segmentType := data[0] >> 5
+	return segmentType, nil
 }
