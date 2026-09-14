@@ -88,4 +88,12 @@ const (
 	// Vendors cannot:
 	//    * Conduct any other data processing operation allowed under a different purpose under this purpose
 	DevelopImprove base.Purpose = 10
+
+	// Purpose 11 (Use limited data to select content) is equivalent to the ad-related Purpose 2 (Use
+	// limited data to select advertising). This purpose is intended to cover processing activities such
+	// as the selection and delivery of non-advertising content based on real-time data (e.g.
+	// information about the page content or non-precise geolocation data), and controlling the
+	// frequency or order in which content is presented to a user. It does not cover the creation or use
+	// of profiles to select personalised content.
+	UseLimitedDataToSelectContent base.Purpose = 11
 )
