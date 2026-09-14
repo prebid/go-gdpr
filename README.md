@@ -2,6 +2,8 @@
 Status](https://travis-ci.org/prebid/go-gdpr.svg?branch=master)](https://travis-ci.org/prebid/go-gdpr)
   [![ReportCard](https://goreportcard.com/badge/github.com/prebid/go-gdpr)](https://goreportcard.com/report/github.com/prebid/go-gdpr)
   [![GoDoc](https://godoc.org/github.com/prebid/go-gdpr?status.svg)](https://godoc.org/github.com/prebid/go-gdpr)
+  [![Go](https://github.com/prebid/go-gdpr/actions/workflows/go.yml/badge.svg)](https://github.com/prebid/go-gdpr/actions/workflows/go.yml)
+
 
 # Go Support for GDPR
 

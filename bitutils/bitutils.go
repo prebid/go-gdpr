@@ -37,7 +37,7 @@ func ParseByte8(data []byte, bitStartIndex uint) (byte, error) {
 		return data[startByte], nil
 	}
 	if uint(len(data)) < (startByte + 2) {
-		return 0, fmt.Errorf("ParseByte8 expected 8 bitst to start at bit %d, but the consent string was only %d bytes long", bitStartIndex, len(data))
+		return 0, fmt.Errorf("ParseByte8 expected 8 bits to start at bit %d, but the consent string was only %d bytes long", bitStartIndex, len(data))
 	}
 
 	leftBits := (data[startByte] & (0xff >> bitStartOffset)) << bitStartOffset
@@ -62,11 +62,11 @@ func ParseUInt12(data []byte, bitStartIndex uint) (uint16, error) {
 
 	leftByte, err := ParseByte4(data, bitStartIndex)
 	if err != nil {
-		return 0, fmt.Errorf("ParseUInt12 error on left byte: %s", err)
+		return 0, fmt.Errorf("ParseUInt12 error on left byte: %w", err)
 	}
 	rightByte, err := ParseByte8(data, bitStartIndex+4)
 	if err != nil {
-		return 0, fmt.Errorf("ParseUInt12 error on right byte: %s", err)
+		return 0, fmt.Errorf("ParseUInt12 error on right byte: %w", err)
 	}
 	return binary.BigEndian.Uint16([]byte{leftByte, rightByte}), nil
 }
@@ -87,11 +87,11 @@ func ParseUInt16(data []byte, bitStartIndex uint) (uint16, error) {
 
 	leftByte, err := ParseByte8(data, bitStartIndex)
 	if err != nil {
-		return 0, fmt.Errorf("ParseUInt16 error on left byte: %s", err)
+		return 0, fmt.Errorf("ParseUInt16 error on left byte: %w", err)
 	}
 	rightByte, err := ParseByte8(data, bitStartIndex+8)
 	if err != nil {
-		return 0, fmt.Errorf("ParseUInt16 error on right byte: %s", err)
+		return 0, fmt.Errorf("ParseUInt16 error on right byte: %w", err)
 	}
 	return binary.BigEndian.Uint16([]byte{leftByte, rightByte}), nil
 }

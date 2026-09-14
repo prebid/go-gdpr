@@ -52,10 +52,10 @@ var test8Bits = []testDefinition{
 
 func TestParseByte8(t *testing.T) {
 	b, err := ParseByte8([]byte{0x44, 0x76}, 11)
-	assertStringsEqual(t, "ParseByte8 expected 8 bitst to start at bit 11, but the consent string was only 2 bytes long", err.Error())
+	assertStringsEqual(t, "ParseByte8 expected 8 bits to start at bit 11, but the consent string was only 2 bytes long", err.Error())
 
 	b, err = ParseByte8([]byte{0x44, 0x76}, 18)
-	assertStringsEqual(t, "ParseByte8 expected 8 bitst to start at bit 18, but the consent string was only 2 bytes long", err.Error())
+	assertStringsEqual(t, "ParseByte8 expected 8 bits to start at bit 18, but the consent string was only 2 bytes long", err.Error())
 
 	for _, test := range test8Bits {
 		b, err = ParseByte8(test.data, test.offset)

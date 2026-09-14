@@ -13,7 +13,7 @@ func parsePubRestriction(metadata ConsentMetadata, startbit uint) (*pubRestricti
 	data := metadata.data
 	numRestrictions, err := bitutils.ParseUInt12(data, startbit)
 	if err != nil {
-		return nil, 0, fmt.Errorf("Error on parsing the number of publisher restrictions: %s", err.Error())
+		return nil, 0, fmt.Errorf("Error on parsing the number of publisher restrictions: %w", err)
 	}
 
 	// Parse out the "exceptions" here.
@@ -22,12 +22,12 @@ func parsePubRestriction(metadata ConsentMetadata, startbit uint) (*pubRestricti
 	for j := uint16(0); j < numRestrictions; j++ {
 		restrictData, err := bitutils.ParseByte8(data, currentOffset)
 		if err != nil {
-			return nil, 0, fmt.Errorf("Error on parsing the publisher restriction purpose/type: %s", err.Error())
+			return nil, 0, fmt.Errorf("Error on parsing the publisher restriction purpose/type: %w", err)
 		}
 		currentOffset = currentOffset + 8
 		numEntries, err := bitutils.ParseUInt12(data, currentOffset)
 		if err != nil {
-			return nil, 0, fmt.Errorf("Error on parsing the number of publisher restriction vendor ranges: %s", err.Error())
+			return nil, 0, fmt.Errorf("Error on parsing the number of publisher restriction vendor ranges: %w", err)
 		}
 		currentOffset = currentOffset + 12
 		vendors := make([]rangeConsent, numEntries)

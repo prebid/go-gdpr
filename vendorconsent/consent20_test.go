@@ -47,7 +47,7 @@ func TestInvalidConsentStrings20(t *testing.T) {
 	assertInvalid20(t, "CONciguONcjGKADACHENAACIAC0ta__AACiQABgAAYA", "the consent string encoded a VendorListVersion of 0, but this value must be greater than or equal to 1")
 
 	// Bad BitFields
-	assertInvalid20(t, "CONciguONcjGKADACHENAOCIAC0ta__AACiQAeAA", "a BitField for 60 vendors requires a consent string of 36 bytes. This consent string had 30")
+	assertInvalid20(t, "CONciguONcjGKADACHENAOCIAC0ta__AACiQAeAA", "a BitField for 60 vendors requires a consent string of 37 bytes. This consent string had 30")
 
 	// Bad RangeSections
 	assertInvalid20(t, "CONciguONcjGKADACHENAOCIAC0ta__AACiQABwA", "vendor consent strings using RangeSections require at least 31 bytes. Got 30")                             // This encodes 184 bits

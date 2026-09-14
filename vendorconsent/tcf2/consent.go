@@ -2,7 +2,7 @@ package vendorconsent
 
 import (
 	"encoding/base64"
-	"fmt"
+	"errors"
 	"strings"
 
 	"github.com/prebid/go-gdpr/api"
@@ -68,7 +68,7 @@ func Parse(data []byte) (api.VendorConsents, error) {
 	}
 
 	if legitIntStart+16 >= uint(len(data))*8 {
-		return nil, fmt.Errorf("invalid consent data: no legitimate interest start position")
+		return nil, errors.New("invalid consent data: no legitimate interest start position")
 	}
 	if isSet(data, legitIntStart+16) {
 		vendorLegitInts, pubRestrictsStart, err = parseRangeSection(metadata, legIntMaxVend, metadata.vendorLegitimateInterestStart)

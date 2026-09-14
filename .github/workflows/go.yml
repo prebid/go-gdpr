@@ -1,0 +1,29 @@
+---
+name: Go
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        go: ['1.16.x', '1.23.x', '1.24.x']
+    name: Go ${{ matrix.go }} job
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: ${{ matrix.go }}
+
+      - name: Test
+        run: make test
+
+      - name: Coverage
+        run: make coverage
