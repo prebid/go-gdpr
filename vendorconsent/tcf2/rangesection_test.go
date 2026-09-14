@@ -29,21 +29,26 @@ func TestRangeSectionConsent(t *testing.T) {
 	for i := uint16(1); i <= consent.MaxVendorID(); i++ {
 		_, expected := vendorsWithConsent[uint(i)]
 		actual := consent.VendorConsent(i)
+
 		if expected != actual {
 			fmt.Printf("Vendor: %d failed\n", i)
 		}
+
 		assertBoolsEqual(t, expected, actual)
 	}
 
 	// TODO func VendorLegitInterest() should be added to api.VendorConsents
 	consentMetadata := consent.(ConsentMetadata)
 	vendorsLegitimateInterestWithConsent := buildMap(24, 44, 129, 130, 131, 591, 614, 628)
+
 	for i := uint16(1); i <= consentMetadata.VendorLegitInterestMaxID(); i++ {
 		_, expected := vendorsLegitimateInterestWithConsent[uint(i)]
 		actual := consentMetadata.VendorLegitInterest(i)
+
 		if expected != actual {
 			fmt.Printf("VendorLegitInterest: %d failed\n", i)
 		}
+
 		assertBoolsEqual(t, expected, actual)
 	}
 }

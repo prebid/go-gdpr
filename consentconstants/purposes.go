@@ -1,8 +1,8 @@
 package consentconstants
 
 // Purpose is one of the IAB GDPR purposes. These appear in:
-//   1. `root.purposes[i]` of the vendor list: https://vendorlist.consensu.org/vendorlist.json
-//   2. PurposesAllowed of the Consent string: https://github.com/InteractiveAdvertisingBureau/GDPR-Transparency-and-Consent-Framework/blob/master/Consent%20string%20and%20vendor%20list%20formats%20v1.1%20Final.md#vendor-consent-string-format-
+//  1. `root.purposes[i]` of the vendor list: https://vendorlist.consensu.org/vendorlist.json
+//  2. PurposesAllowed of the Consent string: https://github.com/InteractiveAdvertisingBureau/GDPR-Transparency-and-Consent-Framework/blob/master/Consent%20string%20and%20vendor%20list%20formats%20v1.1%20Final.md#vendor-consent-string-format-
 type Purpose uint8
 
 // TCF 1 Purposes:

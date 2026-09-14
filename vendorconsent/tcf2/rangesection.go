@@ -22,12 +22,14 @@ func parseRangeSection(metadata ConsentMetadata, maxVendorID uint16, startbit ui
 	// Parse out the "exceptions" here.
 	currentOffset := startbit + 12
 	consents := make([]rangeConsent, numEntries)
+
 	for i := range consents {
 		bitsConsumed, err := parseRangeConsent(&consents[i], data, currentOffset, maxVendorID)
 		if err != nil {
 			return nil, 0, err
 		}
-		currentOffset = currentOffset + bitsConsumed
+
+		currentOffset += bitsConsumed
 	}
 
 	return &rangeSection{
@@ -51,21 +53,27 @@ func parseRangeConsent(dst *rangeConsent, data []byte, initialBit uint, maxVendo
 		if err != nil {
 			return 0, err
 		}
+
 		end, err := bitutils.ParseUInt16(data, initialBit+17)
 		if err != nil {
 			return 0, err
 		}
+
 		if start == 0 {
 			return 0, fmt.Errorf("bit %d range entry exclusion starts at 0, but the min vendor ID is 1", initialBit)
 		}
+
 		if end > maxVendorID {
 			return 0, fmt.Errorf("bit %d range entry exclusion ends at %d, but the max vendor ID is %d", initialBit, end, maxVendorID)
 		}
+
 		if end <= start {
 			return 0, fmt.Errorf("bit %d range entry excludes vendors [%d, %d]. The start should be less than the end", initialBit, start, end)
 		}
+
 		dst.startID = start
 		dst.endID = end
+
 		return 33, nil
 	}
 
@@ -73,12 +81,14 @@ func parseRangeConsent(dst *rangeConsent, data []byte, initialBit uint, maxVendo
 	if err != nil {
 		return 0, err
 	}
+
 	if vendorID == 0 || vendorID > maxVendorID {
 		return 0, fmt.Errorf("bit %d range entry excludes vendor %d, but only vendors [1, %d] are valid", initialBit, vendorID, maxVendorID)
 	}
 
 	dst.startID = vendorID
 	dst.endID = vendorID
+
 	return 17, nil
 }
 
@@ -107,6 +117,7 @@ func (p *rangeSection) VendorConsent(id uint16) bool {
 			return true
 		}
 	}
+
 	return false
 }
 

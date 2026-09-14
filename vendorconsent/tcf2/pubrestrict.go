@@ -11,6 +11,7 @@ const assumedMaxVendorID uint16 = 32767
 
 func parsePubRestriction(metadata ConsentMetadata, startbit uint) (*pubRestrictions, uint, error) {
 	data := metadata.data
+
 	numRestrictions, err := bitutils.ParseUInt12(data, startbit)
 	if err != nil {
 		return nil, 0, fmt.Errorf("Error on parsing the number of publisher restrictions: %w", err)
@@ -19,31 +20,39 @@ func parsePubRestriction(metadata ConsentMetadata, startbit uint) (*pubRestricti
 	// Parse out the "exceptions" here.
 	currentOffset := startbit + 12
 	restrictions := make(map[byte]pubRestriction, numRestrictions)
+
 	for j := uint16(0); j < numRestrictions; j++ {
 		restrictData, err := bitutils.ParseByte8(data, currentOffset)
 		if err != nil {
 			return nil, 0, fmt.Errorf("Error on parsing the publisher restriction purpose/type: %w", err)
 		}
-		currentOffset = currentOffset + 8
+
+		currentOffset += 8
+
 		numEntries, err := bitutils.ParseUInt12(data, currentOffset)
 		if err != nil {
 			return nil, 0, fmt.Errorf("Error on parsing the number of publisher restriction vendor ranges: %w", err)
 		}
-		currentOffset = currentOffset + 12
+
+		currentOffset += 12
 		vendors := make([]rangeConsent, numEntries)
+
 		for i := range vendors {
 			bitsConsumed, err := parseRangeConsent(&vendors[i], data, currentOffset, assumedMaxVendorID)
 			if err != nil {
 				return nil, 0, err
 			}
-			currentOffset = currentOffset + bitsConsumed
+
+			currentOffset += bitsConsumed
 		}
+
 		restrictions[restrictData] = pubRestriction{
 			purposeID:    (restrictData & 0xfc) >> 2,
 			restrictType: (restrictData & 0x03),
 			vendors:      vendors,
 		}
 	}
+
 	return &pubRestrictions{restrictions: restrictions}, currentOffset, nil
 }
 
@@ -57,17 +66,19 @@ type pubRestriction struct {
 	vendors      []rangeConsent
 }
 
-func (p *pubRestrictions) CheckPubRestriction(purposeID uint8, restrictType uint8, vendor uint16) bool {
+func (p *pubRestrictions) CheckPubRestriction(purposeID, restrictType uint8, vendor uint16) bool {
 	key := byte(purposeID<<2 | (restrictType & 0x03))
+
 	restriction, ok := p.restrictions[key]
 	if !ok {
 		return false
 	}
+
 	for i := 0; i < len(restriction.vendors); i++ {
 		if restriction.vendors[i].Contains(vendor) {
 			return true
 		}
 	}
-	return false
 
+	return false
 }

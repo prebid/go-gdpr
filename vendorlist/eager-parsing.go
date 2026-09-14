@@ -12,8 +12,8 @@ import (
 // The returned object can be shared safely between goroutines.
 //
 // This is ideal if:
-//   1. You plan to call functions on the returned VendorList many times before discarding it.
-//   2. You need strong input validation and good error messages.
+//  1. You plan to call functions on the returned VendorList many times before discarding it.
+//  2. You need strong input validation and good error messages.
 //
 // Otherwise, you may get better performance with ParseLazily.
 func ParseEagerly(data []byte) (api.VendorList, error) {
@@ -25,14 +25,15 @@ func ParseEagerly(data []byte) (api.VendorList, error) {
 	if contract.Version == 0 {
 		return nil, errors.New("data.vendorListVersion was 0 or undefined. Versions should start at 1")
 	}
+
 	if len(contract.Vendors) == 0 {
 		return nil, errors.New("data.vendors was undefined or had no elements")
 	}
 
 	parsedList := parsedVendorList{
 		specVersion: contract.GVLSpecificationVersion,
-		version: contract.Version,
-		vendors: make(map[uint16]parsedVendor, len(contract.Vendors)),
+		version:     contract.Version,
+		vendors:     make(map[uint16]parsedVendor, len(contract.Vendors)),
 	}
 
 	for i := 0; i < len(contract.Vendors); i++ {
@@ -54,10 +55,13 @@ func parseVendor(contract vendorListVendorContract) parsedVendor {
 
 func mapify(input []uint8) map[consentconstants.Purpose]struct{} {
 	m := make(map[consentconstants.Purpose]struct{}, len(input))
+
 	var s struct{}
+
 	for _, value := range input {
 		m[consentconstants.Purpose(value)] = s
 	}
+
 	return m
 }
 
@@ -80,6 +84,7 @@ func (l parsedVendorList) Vendor(vendorID uint16) api.Vendor {
 	if ok {
 		return vendor
 	}
+
 	return nil
 }
 
@@ -90,11 +95,13 @@ type parsedVendor struct {
 
 func (l parsedVendor) Purpose(purposeID consentconstants.Purpose) (hasPurpose bool) {
 	_, hasPurpose = l.purposeIDs[purposeID]
+
 	return
 }
 
 func (l parsedVendor) PurposeStrict(purposeID consentconstants.Purpose) (hasPurpose bool) {
 	_, hasPurpose = l.purposeIDs[purposeID]
+
 	return
 }
 
@@ -104,11 +111,13 @@ func (l parsedVendor) PurposeStrict(purposeID consentconstants.Purpose) (hasPurp
 // For an explanation of legitimate interest, see https://www.gdpreu.org/the-regulation/key-concepts/legitimate-interest/
 func (l parsedVendor) LegitimateInterest(purposeID consentconstants.Purpose) (hasLegitimateInterest bool) {
 	_, hasLegitimateInterest = l.legitimateInterestIDs[purposeID]
+
 	return
 }
 
 func (l parsedVendor) LegitimateInterestStrict(purposeID consentconstants.Purpose) (hasLegitimateInterest bool) {
 	_, hasLegitimateInterest = l.legitimateInterestIDs[purposeID]
+
 	return
 }
 
@@ -123,9 +132,9 @@ func (l parsedVendor) SpecialFeature(featureID consentconstants.SpecialFeature) 
 }
 
 type vendorListContract struct {
-	GVLSpecificationVersion uint16     `json:"gvlSpecificationVersion"`
-	Version uint16                     `json:"vendorListVersion"`
-	Vendors []vendorListVendorContract `json:"vendors"`
+	GVLSpecificationVersion uint16                     `json:"gvlSpecificationVersion"`
+	Version                 uint16                     `json:"vendorListVersion"`
+	Vendors                 []vendorListVendorContract `json:"vendors"`
 }
 
 type vendorListVendorContract struct {

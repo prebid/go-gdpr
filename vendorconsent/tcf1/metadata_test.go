@@ -8,6 +8,7 @@ import (
 func TestCreatedDate(t *testing.T) {
 	consent, err := Parse(decode(t, "BIRAfK8OOHsDFABABBAAABAAAAAAEA"))
 	assertNilError(t, err)
+
 	created := consent.Created().UTC()
 	year, month, day := created.Date()
 	assertIntsEqual(t, 1998, year)
@@ -21,6 +22,7 @@ func TestCreatedDate(t *testing.T) {
 func TestLastUpdated(t *testing.T) {
 	consent, err := Parse(decode(t, "BIRAfK8OOHsDFABABBAAABAAAAAAEA"))
 	assertNilError(t, err)
+
 	updated := consent.LastUpdated().UTC()
 	year, month, day := updated.Date()
 	assertIntsEqual(t, 2018, year)

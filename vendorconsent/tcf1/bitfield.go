@@ -19,8 +19,9 @@ func parseBitField(data consentMetadata) (*consentBitField, error) {
 
 	otherBytesRequired := (vendorBitsRequired - 3) / 8
 	if (vendorBitsRequired-3)%8 > 0 {
-		otherBytesRequired = otherBytesRequired + 1
+		otherBytesRequired++
 	}
+
 	dataLengthRequired := 22 + otherBytesRequired
 	if uint(len(data)) < uint(dataLengthRequired) {
 		return nil, fmt.Errorf("a BitField for %d vendors requires a consent string of %d bytes. This consent string had %d", vendorBitsRequired, dataLengthRequired, len(data))
@@ -48,6 +49,7 @@ func (f *consentBitField) VendorConsent(id uint16) bool {
 	if id <= 3 {
 		return byteToBool(f.firstThree & (0x08 >> id))
 	}
+
 	return isSet(f.others, uint(id-4))
 }
 

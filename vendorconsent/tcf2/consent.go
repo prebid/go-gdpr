@@ -27,10 +27,12 @@ func ParseString(consent string) (api.VendorConsents, error) {
 
 	buff := []byte(consent)
 	decoded := buff
+
 	n, err := base64.RawURLEncoding.Decode(decoded, buff)
 	if err != nil {
 		return nil, err
 	}
+
 	decoded = decoded[:n:n]
 
 	return Parse(decoded)
@@ -45,9 +47,11 @@ func Parse(data []byte) (api.VendorConsents, error) {
 	}
 
 	var vendorConsents vendorConsentsResolver
+
 	var vendorLegitInts vendorConsentsResolver
 
 	var legitIntStart uint
+
 	var pubRestrictsStart uint
 	// Bit 229 determines whether or not the consent string encodes Vendor data in a RangeSection or BitField.
 	// We know from parseMetadata that we have at least 29*8=232 bits available
@@ -56,12 +60,14 @@ func Parse(data []byte) (api.VendorConsents, error) {
 	} else {
 		vendorConsents, legitIntStart, err = parseBitField(metadata, metadata.MaxVendorID(), 230)
 	}
+
 	if err != nil {
 		return nil, err
 	}
 
 	metadata.vendorConsents = vendorConsents
 	metadata.vendorLegitimateInterestStart = legitIntStart + 17
+
 	legIntMaxVend, err := bitutils.ParseUInt16(data, legitIntStart)
 	if err != nil {
 		return nil, err
@@ -70,11 +76,13 @@ func Parse(data []byte) (api.VendorConsents, error) {
 	if legitIntStart+16 >= uint(len(data))*8 {
 		return nil, errors.New("invalid consent data: no legitimate interest start position")
 	}
+
 	if isSet(data, legitIntStart+16) {
 		vendorLegitInts, pubRestrictsStart, err = parseRangeSection(metadata, legIntMaxVend, metadata.vendorLegitimateInterestStart)
 	} else {
 		vendorLegitInts, pubRestrictsStart, err = parseBitField(metadata, legIntMaxVend, metadata.vendorLegitimateInterestStart)
 	}
+
 	if err != nil {
 		return nil, err
 	}
@@ -90,7 +98,6 @@ func Parse(data []byte) (api.VendorConsents, error) {
 	metadata.publisherRestrictions = pubRestrictions
 
 	return metadata, err
-
 }
 
 // IsConsentV2 return true if the consent strings looks like a tcf v2 consent string

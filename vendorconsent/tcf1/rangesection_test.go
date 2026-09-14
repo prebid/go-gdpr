@@ -53,10 +53,12 @@ func TestParseUInt16(t *testing.T) {
 	doParseIntTest(t, []byte{0xf4, 0x13}, 0, 0xf413)
 }
 
-func doParseIntTest(t *testing.T, data []byte, offset int, expected int) {
+func doParseIntTest(t *testing.T, data []byte, offset, expected int) {
 	t.Helper()
+
 	parsedVal, err := parseUInt16(data, uint(offset))
 	assertNilError(t, err)
+
 	if parsedVal != uint16(expected) {
 		t.Errorf("Failed to parse value. Got %d", parsedVal)
 	}

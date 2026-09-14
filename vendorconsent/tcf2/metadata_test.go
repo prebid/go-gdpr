@@ -8,6 +8,7 @@ import (
 func TestCreatedDate(t *testing.T) {
 	consent, err := Parse(decode(t, "COvcSpYOvcSpYC9AAAENAPCAAAAAAAAAAAAACvwDQABAAIAAYABIAC4AJQAagA9ACEAPgAjIBJoCvAK-AAAAAA"))
 	assertNilError(t, err)
+
 	created := consent.Created().UTC()
 	year, month, day := created.Date()
 	assertIntsEqual(t, 2020, year)
@@ -21,6 +22,7 @@ func TestCreatedDate(t *testing.T) {
 func TestLastUpdate(t *testing.T) {
 	consent, err := Parse(decode(t, "COvcSpYOvcSpYC9AAAENAPCAAAAAAAAAAAAACvwDQABAAIAAYABIAC4AJQAagA9ACEAPgAjIBJoCvAK-AAAAAA"))
 	assertNilError(t, err)
+
 	updated := consent.LastUpdated().UTC()
 	year, month, day := updated.Date()
 	assertIntsEqual(t, 2020, year)
@@ -62,50 +64,51 @@ func TestLanguageExtremes(t *testing.T) {
 func TestTCFPolicyVersion(t *testing.T) {
 	baseConsent := "CPtGDMAPtGDMALMAAAENA_C_AAAAAAAAACiQAAAAAAAA"
 	index := 22 // policy version is at the 23rd 6-bit base64 position
-	tests := []struct{
-		name string
-		base64Char  string
-		expected    uint8
+
+	tests := []struct {
+		name       string
+		base64Char string
+		expected   uint8
 	}{
 		{
-			name: "char_A_bits_000000_is_version_0",
-			base64Char:  "A",
-			expected:    0,
+			name:       "char_A_bits_000000_is_version_0",
+			base64Char: "A",
+			expected:   0,
 		},
 		{
-			name: "char_B_bits_000001_is_version_1",
-			base64Char:  "B",
-			expected:    1,
+			name:       "char_B_bits_000001_is_version_1",
+			base64Char: "B",
+			expected:   1,
 		},
 		{
-			name: "char_C_bits_000010_is_version_2",
-			base64Char:  "C",
-			expected:    2,
+			name:       "char_C_bits_000010_is_version_2",
+			base64Char: "C",
+			expected:   2,
 		},
 		{
-			name: "char_E_bits_000100_is_version_4",
-			base64Char:  "E",
-			expected:    4,
+			name:       "char_E_bits_000100_is_version_4",
+			base64Char: "E",
+			expected:   4,
 		},
 		{
-			name: "char_I_bits_001000_is_version_8",
-			base64Char:  "I",
-			expected:    8,
+			name:       "char_I_bits_001000_is_version_8",
+			base64Char: "I",
+			expected:   8,
 		},
 		{
-			name: "char_Q_bits_010000_is_version_16",
-			base64Char:  "Q",
-			expected:    16,
+			name:       "char_Q_bits_010000_is_version_16",
+			base64Char: "Q",
+			expected:   16,
 		},
 		{
-			name: "char_g_bits_100000_is_version_32",
-			base64Char:  "g",
-			expected:    32,
+			name:       "char_g_bits_100000_is_version_32",
+			base64Char: "g",
+			expected:   32,
 		},
 		{
-			name: "char_underscore_bits_111111_is_version_63",
-			base64Char:  "_",
-			expected:    63,
+			name:       "char_underscore_bits_111111_is_version_63",
+			base64Char: "_",
+			expected:   63,
 		},
 	}
 	for _, tt := range tests {
@@ -121,6 +124,7 @@ func TestTCFPolicyVersion(t *testing.T) {
 func TestTCF2Fields(t *testing.T) {
 	baseConsent, err := Parse(decode(t, "COx3XOeOx3XOeLkAAAENAfCIAAAAAHgAAIAAAAAAAAAA"))
 	assertNilError(t, err)
+
 	consent := baseConsent.(ConsentMetadata)
 
 	assertBoolsEqual(t, true, consent.PurposeOneTreatment())
@@ -131,6 +135,7 @@ func TestTCF2Fields(t *testing.T) {
 func TestLITransparency(t *testing.T) {
 	baseConsent, err := Parse(decode(t, "COx3XOeOx3XOeLkAAAENAfCIAAAAAHgAAIAAAAAAAAAA"))
 	assertNilError(t, err)
+
 	consent := baseConsent.(ConsentMetadata)
 
 	assertBoolsEqual(t, false, consent.PurposeLITransparency(1))
@@ -141,5 +146,4 @@ func TestLITransparency(t *testing.T) {
 	assertBoolsEqual(t, false, consent.PurposeLITransparency(6))
 	assertBoolsEqual(t, false, consent.PurposeLITransparency(7))
 	assertBoolsEqual(t, false, consent.PurposeLITransparency(28))
-
 }

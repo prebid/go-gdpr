@@ -15,10 +15,12 @@ func ParseString(consent string) (api.VendorConsents, error) {
 
 	buff := []byte(consent)
 	decoded := buff
+
 	n, err := base64.RawURLEncoding.Decode(decoded, buff)
 	if err != nil {
 		return nil, err
 	}
+
 	decoded = decoded[:n:n]
 
 	return Parse(decoded)

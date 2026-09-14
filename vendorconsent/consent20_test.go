@@ -90,8 +90,9 @@ func TestParseEmptyString(t *testing.T) {
 	}
 }
 
-func assertInvalid20(t *testing.T, urlEncodedString string, expectError string) {
+func assertInvalid20(t *testing.T, urlEncodedString, expectError string) {
 	t.Helper()
+
 	data, err := base64.RawURLEncoding.DecodeString(urlEncodedString)
 	assertNilError(t, err)
 	assertInvalidBytes20(t, data, expectError)
@@ -99,6 +100,7 @@ func assertInvalid20(t *testing.T, urlEncodedString string, expectError string) 
 
 func assertInvalidBytes20(t *testing.T, data []byte, expectError string) {
 	t.Helper()
+
 	if consent, err := tcf2.Parse(data); err == nil {
 		t.Errorf("base64 URL-encoded string %s was considered valid, but shouldn't be. MaxVendorID: %d. len(data): %d", base64.RawURLEncoding.EncodeToString(data), consent.MaxVendorID(), len(data))
 	} else if err.Error() != expectError {

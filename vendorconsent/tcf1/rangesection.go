@@ -12,17 +12,20 @@ func parseRangeSection(data consentMetadata) (*rangeSection, error) {
 	if len(data) < 24 {
 		return nil, fmt.Errorf("vendor consent strings using RangeSections require at least 24 bytes. Got %d", len(data))
 	}
+
 	numEntries := parseNumEntries(data)
 
 	// Parse out the "exceptions" here.
 	currentOffset := uint(186)
 	exceptions := make([]rangeException, numEntries)
+
 	for i := range exceptions {
 		bitsConsumed, err := parseException(&exceptions[i], data, currentOffset)
 		if err != nil {
 			return nil, err
 		}
-		currentOffset = currentOffset + bitsConsumed
+
+		currentOffset += bitsConsumed
 	}
 
 	return &rangeSection{
@@ -56,21 +59,27 @@ func parseException(dst *rangeException, data consentMetadata, initialBit uint) 
 		if err != nil {
 			return 0, err
 		}
+
 		end, err := parseUInt16(data, initialBit+17)
 		if err != nil {
 			return 0, err
 		}
+
 		if start == 0 {
 			return 0, fmt.Errorf("bit %d range entry exclusion starts at 0, but the min vendor ID is 1", initialBit)
 		}
+
 		if end > data.MaxVendorID() {
 			return 0, fmt.Errorf("bit %d range entry exclusion ends at %d, but the max vendor ID is %d", initialBit, end, data.MaxVendorID())
 		}
+
 		if end <= start {
 			return 0, fmt.Errorf("bit %d range entry excludes vendors [%d, %d]. The start should be less than the end", initialBit, start, end)
 		}
+
 		dst.startID = start
 		dst.endID = end
+
 		return 33, nil
 	}
 
@@ -78,12 +87,14 @@ func parseException(dst *rangeException, data consentMetadata, initialBit uint) 
 	if err != nil {
 		return 0, err
 	}
+
 	if vendorID == 0 || vendorID > data.MaxVendorID() {
 		return 0, fmt.Errorf("bit %d range entry excludes vendor %d, but only vendors [1, %d] are valid", initialBit, vendorID, data.MaxVendorID())
 	}
 
 	dst.startID = vendorID
 	dst.endID = vendorID
+
 	return 17, nil
 }
 
@@ -91,12 +102,15 @@ func parseException(dst *rangeException, data consentMetadata, initialBit uint) 
 func parseUInt16(data []byte, bitStartIndex uint) (uint16, error) {
 	startByte := bitStartIndex / 8
 	bitStartOffset := bitStartIndex % 8
+
 	if bitStartOffset == 0 {
 		if uint(len(data)) < (startByte + 2) {
 			return 0, fmt.Errorf("rangeSection expected a 16-bit vendorID to start at bit %d, but the consent string was only %d bytes long", bitStartIndex, len(data))
 		}
+
 		return binary.BigEndian.Uint16(data[startByte : startByte+2]), nil
 	}
+
 	if uint(len(data)) < (startByte + 3) {
 		return 0, fmt.Errorf("rangeSection expected a 16-bit vendorID to start at bit %d, but the consent string was only %d bytes long", bitStartIndex, len(data))
 	}
@@ -105,7 +119,7 @@ func parseUInt16(data []byte, bitStartIndex uint) (uint16, error) {
 
 	// Take the rightmost bits of the left byte, and the leftmost bits of the middle byte
 	leftByte := (data[startByte] & (0xff >> bitStartOffset)) << bitStartOffset
-	leftByte = leftByte | (data[startByte+1] >> shiftComplement)
+	leftByte |= (data[startByte+1] >> shiftComplement)
 
 	// Take the rightmost bits of the middle byte, and the leftmost bits of the right byte
 	rightByte := data[startByte+2] & (0xff << shiftComplement)
@@ -132,6 +146,7 @@ func (p rangeSection) VendorConsent(id uint16) bool { // TODO check if possible 
 			return !p.defaultValue
 		}
 	}
+
 	return p.defaultValue
 }
 

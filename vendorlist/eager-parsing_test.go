@@ -12,6 +12,7 @@ func TestEagerlyParsedVendorList(t *testing.T) {
 		if err != nil {
 			t.Errorf("ParseEagerly returned an unexpected error: %v", err)
 		}
+
 		return vendorList
 	})
 }
